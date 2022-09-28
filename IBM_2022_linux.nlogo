@@ -14,6 +14,7 @@ globals[ ;varibles used by all agents
   edge                ;agentset of edge patches
   available-matrix    ;agentset of matrix patches with specific distance (95-105 cells) from the edge, to initiate individuals, and avoid turtles to be moved to isolated matrix cells within habitat patches.
 
+  list-colors         ;code of colors per group of turtles
 
   movement
   H'_hab
@@ -50,11 +51,6 @@ globals[ ;varibles used by all agents
   occup_step
 
   v
-  occupancy_0
-  occupancy_05
-  occupancy_1
-  occupancy_15
-  occupancy_2
 
   ;--- to create agents in all fragments
   id-list             ;list of id values of patches
@@ -65,6 +61,7 @@ globals[ ;varibles used by all agents
   p                   ;run number
   file_dist           ;to create name for distribution file
 
+  ;--- define behaviour and turtle sets
   all_e_C             ;list of all exponents
   each_group          ;total of individuals per group of behaviour
   group               ;final group of each behaviour - to calculate final outputs
@@ -144,7 +141,7 @@ to setup
 ;--------------------------------Define patches types
   set habitat patches with [cover = 1]
   set matrix patches with [cover = 0]
-  set edge patches with [cover = 1 and count neighbors4 with [cover = 1] < 4]
+  set edge habitat with [count neighbors4 with [cover = 1] < 4]
   set available-matrix patches with [cover = 0 and  patches_DIST > perceptual_range]
 
 ;--------------------------------Define habitat quality in habitat patches
@@ -155,7 +152,7 @@ to setup
 ;---------------------------------------------------------------------------------------------------
 
 ;--------------------------------Create turtles in the habitat patches
-  create_turtles_all_patches                      ; create individuals in every patch - number of individuals is proportional to patch size.
+  create_turtles_all_patches ; create individuals in every patch - number of individuals is proportional to patch size.
   ;create_turtles_half_landscape
 
 ;--------------------------------Import species parameters
@@ -168,10 +165,9 @@ to setup
    set status "set" set color red
    set PR perceptual_range / resolution           ;100m represent 10 pixels, because each
    set H' mean [(Q)] of patches in-radius PR      ;Mean habitat quality within perceptual range
-   set total_dist 0                               ;Total distance realized before settle
+   set total_dist 0                               ;Total distance moved before settle
    set dist 0                                     ;Temporary distance realized during dispersal per day - reset at every step
-   ;set max_dist max_distance_per_day / resolution ;Maximum distance during dispersal per day  -- Need to get this data with Marquinhos!! **
-   set max_dist (random-normal dmean dsd) / resolution
+   set max_dist (random-normal dmean dsd) / resolution ;Maximum distance during dispersal per day  -- Need to get this data with Marquinhos!! **
    set En 1                                       ;Energy - Body conditions
    set my_id [patches_ID] of patch-here           ;Id of initial patch
    set initial_patch patch-here
@@ -180,17 +176,17 @@ to setup
    set Ci 0.5 + random-float 0.4
   ]
 
-;--------------------------------Define settlement behaviors (e_C) and creating turtles sets
+;--------------------------------Define settlement behaviors (e_C) and creating turtles sets e colors
   assign_settlement_behaviour
 
-;---------------------------------------------------------------------------------------------------
-;------------------------------------- INITIAL OUTPUTS----------------------------------------------
-;---------------------------------------------------------------------------------------------------
+;--------------------------------Calculate occupancy
   set c_occupancy table:make ; create table to store occupanccy
-  cell_occupancy ;-------------------------------------------------Calculate Initial Cell Occupancy
-  ;store-turtles-location-initial-per-behavior ;--------------------Store initial distribution per settlement behaviour
+  cell_occupancy ;Calculate Initial Cell Occupancy
 
-;----------------------------------------------------------------------------------------------------Move to edge to start dispersal
+;--------------------------------Store distribution -CHECAR!
+  ;store-turtles-location-initial-per-behavior ; Store initial distribution per settlement behaviour
+
+;--------------------------------Move to edge to start dispersal
   ask turtles[
     move-to min-one-of edge [distance myself]                                               ;move individual to the edge
     ;let available-matrix-i available-matrix with [pxcor < -100]                             ;move to edge but avoid to cross to the other half
@@ -200,8 +196,20 @@ to setup
     move-to one-of neighbors with [cover = 0]
     set status "dis"
   ]
-  ;-------------------------------------------------------------------------------------------GENERATE OUTPUTS------------------------------------------------------------------------------------------
-   if not file-exists? "output.txt"
+
+;---------------------------------------------------------------------------------------------------
+;------------------------------------- INITIAL OUTPUTS----------------------------------------------
+;---------------------------------------------------------------------------------------------------
+  if occupancy_output = TRUE [
+  if not file-exists? "occupancy.txt"
+  [
+    file-open "occupancy.txt"
+    file-print c_occupancy
+    file-close
+  ]
+  ]
+
+  if not file-exists? "output.txt"  ; CHECAR NO FINAL!!!
     [
     file-open "output.txt"
       file-print (word "run"
@@ -214,23 +222,13 @@ to setup
                         "," "mean_dist_T"                                                                ;mean distance realized in total
                         "," "mean_H_T"                                                                   ;mean habitat quality of settlement patch in total
                         "," "mortality"                                                                  ;mortality rate
-                        ;"," "total-patches" ","  "occupied" "," "frag-occupancy"                         ;frag-occupancy variables
-                        "," "occupancy"
+                        "," "final_occupancy"                                                            ;final occupancy per behaviour
                         "," "recharge-rate" "," "discharge-rate"                                         ;recharge and discharge rate
                         "," "mortality_rate_dispersal"                                                   ;mortality rate in dispersal
                         "," "mean_En_end_T"                                                              ;mean energetic condition in the end in total
                         "," "mean_time_set_T"                                                            ;mean time to settle in total
       )
       file-close]
-
-  if occupancy_output = TRUE [
-  if not file-exists? "occupancy.txt"
-  [
-    file-open "occupancy.txt"
-    file-print c_occupancy
-    file-close
-  ]
-  ]
   reset-ticks
 end
 
@@ -437,8 +435,6 @@ to define-output-variables
   ]
 end
 
-
-
 to store-turtles-location-initial-per-behavior
 foreach all_e_C[
   x ->
@@ -607,6 +603,7 @@ to specie_values ;import parameters for each specie!
 end
 
 to assign_settlement_behaviour
+  turtle-colors
   set all_e_C [] ;empty list
   let all_e_Ci (range initial (ends + interval) interval) ;new list with values of e_C for each behaviour
   foreach all_e_Ci[ ;edit list to avoid float problems, then define only one decimal.
@@ -616,8 +613,17 @@ to assign_settlement_behaviour
   set each_group individuals / length all_e_C ;create turtle set based on settlement behaviours by calculate the total of behaviour and divide the number of individual for that.
   ask turtles [set e_C "NA"] ;then, assign e_C per group
   foreach all_e_C[
-    x -> ask n-of each_group turtles with [e_C = "NA"] [set e_C x ]
+    x -> ask n-of each_group turtles with [e_C = "NA"] [set e_C x set color table:get list-colors x]
   ]
+end
+
+to turtle-colors
+  set list-colors table:make
+  table:put list-colors 0 15
+  table:put list-colors 0.5 45
+  table:put list-colors 1 25
+  table:put list-colors 1.5 85
+  table:put list-colors 2 135
 end
 
 ;---------------------------------------------------------------------------------------------------
@@ -640,10 +646,10 @@ to cell_occupancy
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-489
-87
-999
-598
+503
+20
+1013
+531
 -1
 -1
 2.5
@@ -678,10 +684,10 @@ landscape_directory
 String
 
 INPUTBOX
-353
-45
-420
-105
+134
+46
+201
+106
 num_lands
 0.0
 1
@@ -700,10 +706,10 @@ output_directory
 String
 
 BUTTON
-515
-23
-608
-78
+282
+47
+352
+102
 Setup
 setup
 NIL
@@ -717,10 +723,10 @@ NIL
 1
 
 BUTTON
-612
-23
-702
-78
+356
+47
+422
+102
 Go
 go
 T
@@ -734,10 +740,10 @@ NIL
 1
 
 TEXTBOX
-425
-47
-483
-109
+206
+48
+264
+110
 Landscape ID from database (0 to 99)
 10
 0.0
@@ -759,10 +765,10 @@ NIL
 HORIZONTAL
 
 CHOOSER
-113
-52
-205
-97
+31
+51
+123
+96
 Specie
 Specie
 "DA" "PQ" "MP"
@@ -784,10 +790,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1028
-137
-1219
-287
+1027
+138
+1218
+268
 Population
 NIL
 NIL
@@ -817,10 +823,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1028
-303
-1692
-423
+1029
+274
+1326
+394
 Settlers
 NIL
 NIL
@@ -836,12 +842,12 @@ PENS
 "Energy" 1.0 0 -14454117 true "" "if t > 1 [plot count turtles with [decision = \"En\"]]"
 
 INPUTBOX
-217
-45
-345
-105
-max_distance_per_day
-1000.0
+234
+170
+403
+230
+min_step_before_settle
+2.0
 1
 0
 Number
@@ -856,17 +862,6 @@ data_directory
 1
 0
 String
-
-INPUTBOX
-34
-46
-101
-106
-time_steps
-0.0
-1
-0
-Number
 
 INPUTBOX
 30
@@ -902,10 +897,10 @@ min_en
 Number
 
 PLOT
-1029
-553
-1693
-681
+1357
+10
+1682
+134
 Mean Habitat Threshold of Dispersers with Plastic Behaviour
 NIL
 NIL
@@ -917,11 +912,11 @@ false
 true
 "" ""
 PENS
-"D 0.0" 1.0 0 -955883 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 0.0]]"
-"D 0.5" 1.0 0 -2674135 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 0.5]]"
-"D 1.0" 1.0 0 -12087248 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 1.0]]"
-"D 1.5" 1.0 0 -14454117 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 1.5]]"
-"D 2.0" 1.0 0 -8630108 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 2.0]]"
+"0.0" 1.0 0 -2674135 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 0.0]]"
+"0.5" 1.0 0 -1184463 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 0.5]]"
+"1.0" 1.0 0 -955883 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 1.0]]"
+"1.5" 1.0 0 -11221820 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 1.5]]"
+"2.0" 1.0 0 -2064490 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 2.0]]"
 
 INPUTBOX
 30
@@ -975,10 +970,10 @@ Directories (landscapes, input data, and output)\n
 1
 
 INPUTBOX
-283
-237
-347
-297
+281
+239
+345
+299
 ac
 0.8
 1
@@ -986,10 +981,10 @@ ac
 Number
 
 TEXTBOX
-281
-182
-386
-234
+351
+244
+456
+296
 Autocorrelation\n    of Habitat \n     Quality \n      (0-1)
 10
 0.0
@@ -1018,10 +1013,10 @@ ends
 Number
 
 PLOT
-1028
-424
-1692
-551
+1329
+274
+1600
+394
 Dispersers
 NIL
 NIL
@@ -1040,10 +1035,10 @@ PENS
 "D 2.0" 1.0 0 -8630108 true "" "plot count turtles with [status = \"dis\" and e_C = 2.0]"
 
 PLOT
-1200
-684
-1865
-814
+1030
+407
+1404
+537
 Mean Habitat Quality in Settlement
 NIL
 NIL
@@ -1057,24 +1052,6 @@ true
 PENS
 "Hab" 1.0 0 -5298144 true "" "if t > 1 and turtles with [decision = \"H\"] != 0 [plot mean [(H')] of turtles with [decision = \"H\"]]"
 "Energy" 1.0 0 -14070903 true "" "if t > 1 and turtles with [decision = \"En\"] != 0 [plot mean [(H')] of turtles with [decision = \"En\"]]"
-
-PLOT
-1224
-137
-1416
-287
-Mean Energetic Condition of Dispersers
-NIL
-NIL
-0.0
-100.0
-0.0
-1.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "if t > 1 [ask one-of turtles [plot mean [(En)] of turtles with [status = \"dis\"]]]\n"
 
 SWITCH
 27
@@ -1110,10 +1087,10 @@ path_outputs
 -1000
 
 PLOT
-662
-615
-861
-765
+727
+611
+926
+761
 Histogram Q
 NIL
 NIL
@@ -1128,10 +1105,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [Q] of habitat"
 
 PLOT
-457
-615
-657
-765
+522
+611
+722
+761
 Max Dist per Day
 NIL
 NIL
@@ -1170,9 +1147,31 @@ Number
 PLOT
 1027
 10
-1557
+1346
 135
-Occupancytable
+Occupancy
+NIL
+NIL
+1.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"0.0" 1.0 0 -2674135 true "" "plot table:get c_occupancy 0"
+"0.5" 1.0 0 -1184463 true "" "plot table:get c_occupancy 0.5"
+"1.0" 1.0 0 -955883 true "" "plot table:get c_occupancy 1"
+"1.5" 1.0 0 -11221820 true "" "plot table:get c_occupancy 1.5"
+"2.0" 1.0 0 -2064490 true "" "plot table:get c_occupancy 2"
+
+PLOT
+1224
+138
+1424
+269
+Energetic Condition
 NIL
 NIL
 0.0
@@ -1181,13 +1180,19 @@ NIL
 10.0
 true
 false
-"" ""
+"" "  set-plot-x-range 0 1\n  set-histogram-num-bars 10\n  set-plot-pen-mode 1"
 PENS
-"0.0" 1.0 0 -16777216 true "" "plot table:get c_occupancy 0"
-"0.5" 1.0 0 -7500403 true "" "plot table:get c_occupancy 0.5"
-"1.0" 1.0 0 -2674135 true "" "plot table:get c_occupancy 1"
-"1.5" 1.0 0 -955883 true "" "plot table:get c_occupancy 1.5"
-"2.0" 1.0 0 -6459832 true "" "plot table:get c_occupancy 2"
+"default" 1.0 0 -16777216 true "" "histogram [En] of turtles"
+
+TEXTBOX
+413
+188
+489
+218
+Each time step is one day
+10
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
