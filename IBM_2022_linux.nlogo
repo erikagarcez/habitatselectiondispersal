@@ -119,54 +119,66 @@ turtles-own[
 
 to setup
   clear-all
-  reset-ticks
   random-seed 10
   set-current-directory output_directory ; Define directory to save output
   set t 0 ; Start time steps at 0
-  ;-------------------------------------------------------------------------------------------CREATE ENVIRONMENT--------------------------------------------------------------------------------------
+
+;---------------------------------------------------------------------------------------------------
+;--------------------------------------CREATE ENVIRONMENT-------------------------------------------
+;---------------------------------------------------------------------------------------------------
   ;resize-world -512 512 -512 512           ; Define landscape 1024x1024.
   ;set-patch-size 0.7
-  ;resize-world -256 256 -256 256           ; Define small landscape just for testing
+  resize-world -256 256 -256 256           ; Define small landscape just for testing
   resize-world -100 100 -100 100
   set-patch-size 2.5
   set resolution 10                        ; Each pixel/cell is 10m
-  ;---------------------------------------------------------------------------------------------------Import and define landscape from directory
+
+;--------------------------------Import and define landscape from directory
   imp_def_PATCHES_ONLY
   imp_def_ID_PATCHES
   imp_def_DIST_PATCHES
   landscape_parameters
-  ;----------------------------------------------------------------------------------------------------Define patches types
+
+;--------------------------------Define patches types
   set habitat patches with [cover = 1]
   set matrix patches with [cover = 0]
   set edge patches with [cover = 1 and count neighbors4 with [cover = 1] < 4]
   set available-matrix patches with [cover = 0 and  patches_DIST > perceptual_range]
-  ;----------------------------------------------------------------------------------------------------Define habitat quality in habitat patches
+
+;--------------------------------Define habitat quality in habitat patches
   create_hab_quality_surface
-  ;set id-list sort remove-duplicates [patches_ID] of habitat
-  ;-------------------------------------------------------------------------------------------CREATE AGENTS------------------------------------------------------------------------------------------
+
+;---------------------------------------------------------------------------------------------------
+;--------------------------------------CREATE AGENTS-------------------------------------------
+;---------------------------------------------------------------------------------------------------
+
+;--------------------------------Create turtles in the habitat patches
   create_turtles_all_patches                      ; create individuals in every patch - number of individuals is proportional to patch size.
   ;create_turtles_half_landscape
 
-  if count turtles < individuals [stop]
-
+;--------------------------------Import species parameters
   specie_values                                   ;import inputs values of each species
+
+;--------------------------------Define turtles variables
   ask turtles [
    ;pen-down
    set size 1
-   set status "dis" set color yellow
-   ;---------------------------------------------------------------------------------------------------Define individuals variables
+   set status "dis" set color red
    set PR perceptual_range / resolution           ;100m represent 10 pixels, because each
    set H' mean [(Q)] of patches in-radius PR      ;Mean habitat quality within perceptual range
    set total_dist 0                               ;Total distance realized before settle
    set dist 0                                     ;Temporary distance realized during dispersal per day - reset at every step
-   set max_dist max_distance_per_day / resolution ;Maximum distance during dispersal per day  -- Need to get this data with Marquinhos!! **
+   ;set max_dist max_distance_per_day / resolution ;Maximum distance during dispersal per day  -- Need to get this data with Marquinhos!! **
+   set max_dist (random-normal dmean dsd) / resolution
    set En 1                                       ;Energy - Body conditions
    set my_id [patches_ID] of patch-here           ;Id of initial patch
    set initial_patch patch-here
+
    ;set Ci [(Q)] of patch-here
    set Ci 0.5 + random-float 0.4
   ]
-  ;----------------------------------------------------------------------------------------------------Define settlement behaviors (e_C) and creating turtles sets
+
+;----------------------------------------------------------------------------------------------------Define settlement behaviors (e_C) and creating turtles sets
   set all_e_C [] ;avoid float problems!
   let all_e_Ci (range initial (ends + interval) interval)
   foreach all_e_Ci[
@@ -180,11 +192,14 @@ to setup
     x ->
     ask n-of each_group turtles with [e_C = "NA"] [set e_C x ]
   ]
-  ;----------------------------------------------------------------------------------------------------Store initial distribution per settlement behaviour
+
+;----------------------------------------------------------------------------------------------------Store initial distribution per settlement behaviour
   store-turtles-location-initial-per-behavior
-  ;----------------------------------------------------------------------------------------------------Calculate Initial Cell Occupancy
+
+;----------------------------------------------------------------------------------------------------Calculate Initial Cell Occupancy
   cell_occupancy
-  ;----------------------------------------------------------------------------------------------------Move to edge to start dispersal
+
+;----------------------------------------------------------------------------------------------------Move to edge to start dispersal
   ask turtles[
     move-to min-one-of edge [distance myself]                                               ;move individual to the edge
     ;let available-matrix-i available-matrix with [pxcor < -100]                             ;move to edge but avoid to cross to the other half
@@ -230,11 +245,8 @@ to setup
   ]
 
   ;histogram of Q of habitat
-  set-current-plot "Histogram Q"
-  set-plot-x-range min [Q] of habitat max [Q] of habitat
-  set-plot-y-range 0 (count habitat / 2)
-  set-histogram-num-bars 10
-  set-plot-pen-mode 1
+  ;set-current-plot "Histogram Q"
+
   reset-ticks
 end
 
@@ -411,101 +423,6 @@ to recharge
   ]
 end
 
-to imp_def_PATCHES_ONLY ;----------------------------------LANDSCAPE WITH ONLY PATCHES
-  ;------------------------------------------------------Import landscape
-  let directory word landscape_directory "exported_ascii_MS_HABMAT_PATCHES_ONLY/" ;define directory
-  let direct_list sort pathdir:list directory ;list of files in directory in order
-  let landscape item num_lands direct_list ;get one of the landscape from the list based on num-lands and define as landscape
-  let dir_landscape word directory landscape ;set the new_landscape with the directory to import
-  ;------------------------------------------------------Define landscape
-  let landscape-dataset gis:load-dataset dir_landscape
-  gis:set-world-envelope-ds gis:envelope-of landscape-dataset ;define the world size similar to the landscape imported
-  gis:apply-raster landscape-dataset cover ;get values of the landscape to variable cover
-
-end
-
-to imp_def_ID_PATCHES ;-----------------------LANDSCAPE WITH ONLY PATCHES - ID
-  ;------------------------------------------------------Import landscape ID_PATCHES
-  let directory_ID_PATCHES word landscape_directory "exported_ascii_MS_HABMAT_PATCHES_ONLY_PID/" ;define directory
-  let direct_list_ID_PATCHES sort pathdir:list directory_ID_PATCHES;list of files in directory
-  let landscape_ID_PATCHES item num_lands direct_list_ID_PATCHES ;get one of the landscape from the list based on num-lands and define as landscape_ID
-  let dir_landscape_ID_PATCHES word directory_ID_PATCHES landscape_ID_PATCHES
-  ;------------------------------------------------------Define landscape ID_PATCHES
-  let landscape-ID_PATCHES-dataset gis:load-dataset dir_landscape_ID_PATCHES
-  gis:set-world-envelope-ds gis:envelope-of landscape-ID_PATCHES-dataset ;define the world size similar to the landscape imported
-  gis:apply-raster landscape-ID_PATCHES-dataset patches_ID ;get values of the landscape to variable cover
-end
-
-to imp_def_DIST_PATCHES ;-----------------------LANDSCAPE  WITH ONLY PATCHES - DIST
-  ;------------------------------------------------------Import landscape PATCHES_DIST
-  let directory_DIST_PATCHES word landscape_directory "exported_ascii_MS_HABMAT_PATCHES_ONLY_DIST/" ;define directory
-  let direct_list_DIST_PATCHES sort pathdir:list directory_DIST_PATCHES ;list of files in directory
-  let landscape_DIST_PATCHES item num_lands direct_list_DIST_PATCHES  ;get one of the landscape from the list based on num-lands and define as landscape_DIST
-  let dir_landscape_DIST_PATCHES word directory_DIST_PATCHES landscape_DIST_PATCHES
-  ;------------------------------------------------------Define landscape PATCHES_DIST
-  let landscape-DIST_PATCHES-dataset gis:load-dataset dir_landscape_DIST_PATCHES
-  gis:set-world-envelope gis:envelope-of landscape-DIST_PATCHES-dataset ;define the world size similar to the landscape imported
-  gis:apply-raster landscape-DIST_PATCHES-dataset patches_DIST ;get values of the landscape to variable cover
-end
-
-to specie_values ;import parameters for each specie!
-  let imp_values (csv:from-file word data_directory "/species_values.csv")
-  if Specie = "DA" [set values item 1 imp_values]
-  if Specie = "PQ" [set values item 2 imp_values]
-  if Specie = "MP" [set values item 3 imp_values]
-  ask turtles [
-  set Xmax-no item 1 values
-  set Xmin-no item 2 values
-  set expo-no item 3 values
-  set mean-ang-no item 4 values
-  set sd-ang-no item 5 values
-  set Xmax-o item 6 values
-  set Xmin-o item 7 values
-  set expo-o item 8 values
-  set mean-ang-o item 9 values
-  set sd-ang-o item 10 values
-  ]
-end
-
-to landscape_parameters ;import landscape parameter for each landscape - habitat amount and clumpiness
-  let imp_land_par (csv:from-file word data_directory "/landscape_parameters.csv")
-  let land_values item (num_lands + 1) imp_land_par
-  set forest item 1 land_values
-  set clumpiness item 2 land_values
-end
-
-to create_hab_quality_surface ;Atkins et al. 2019
-  ;ask habitat[set Q 0.5
-  ;            set Q Q + random-float 0.5] ;;set quality values for habitat patches
-  ;ask habitat[set Q Q + random-float ns - (2 * ns)] ;;add noise to landscape by randomly increasing or decreasing patch quality in habitat
-  ;ask habitat[set pcolor scale-color green Q 0 1]
-  ;ask matrix[set Q 0 set pcolor brown]
-  foreach remove-duplicates [patches_ID] of habitat[
-    x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
-  ]
-  repeat (count habitat - length remove-duplicates [patches_ID] of habitat)[ask one-of habitat [assign]]
-  ask habitat[set pcolor scale-color green Q 0.5 1]
-  ask matrix[set Q 0 set pcolor brown]
-end
-
-to assign
- ;let ac 0
- ifelse random-float 1.1 < ac
-  [let model habitat with [Q != 0 and count neighbors with [Q = 0] > 0]
-    if any? model [
-      ask one-of model [
-        ask neighbors with [Q = 0] [set Q ([Q] of myself) + random-float 0.01]
-      ]
-    ]
-  ]
-  [let cand habitat with [Q = 0]
-    if any? cand [
-      ask one-of cand [
-        set Q 0.5 + random-float 0.4]
-    ]
-  ]
-end
-
 to define-output-variables
   ifelse count group = 0
   [set total_set_T 0
@@ -583,17 +500,106 @@ foreach all_e_C[
   ]
 end
 
+to save_paths
+  file-open "paths.txt"
+  file-print (word p "," who "," t "," xcor "," ycor "," [cover] of patch-here)
+  file-close
+end
+
+;---------------------------------------------------------------------------------------------------
+;--------------------------------------SUB-MODEL IN SETUP-------------------------------------------
+;---------------------------------------------------------------------------------------------------
+
+; CREATE ENVIROMENT
+
+to imp_def_PATCHES_ONLY ;----------------------------------LANDSCAPE WITH ONLY PATCHES
+  ;------------------------------------------------------Import landscape
+  let directory word landscape_directory "exported_ascii_MS_HABMAT_PATCHES_ONLY/" ;define directory
+  let direct_list sort pathdir:list directory ;list of files in directory in order
+  let landscape item num_lands direct_list ;get one of the landscape from the list based on num-lands and define as landscape
+  let dir_landscape word directory landscape ;set the new_landscape with the directory to import
+  ;------------------------------------------------------Define landscape
+  let landscape-dataset gis:load-dataset dir_landscape
+  gis:set-world-envelope-ds gis:envelope-of landscape-dataset ;define the world size similar to the landscape imported
+  gis:apply-raster landscape-dataset cover ;get values of the landscape to variable cover
+
+end
+
+to imp_def_ID_PATCHES ;-----------------------LANDSCAPE WITH ONLY PATCHES - ID
+  ;------------------------------------------------------Import landscape ID_PATCHES
+  let directory_ID_PATCHES word landscape_directory "exported_ascii_MS_HABMAT_PATCHES_ONLY_PID/" ;define directory
+  let direct_list_ID_PATCHES sort pathdir:list directory_ID_PATCHES;list of files in directory
+  let landscape_ID_PATCHES item num_lands direct_list_ID_PATCHES ;get one of the landscape from the list based on num-lands and define as landscape_ID
+  let dir_landscape_ID_PATCHES word directory_ID_PATCHES landscape_ID_PATCHES
+  ;------------------------------------------------------Define landscape ID_PATCHES
+  let landscape-ID_PATCHES-dataset gis:load-dataset dir_landscape_ID_PATCHES
+  gis:set-world-envelope-ds gis:envelope-of landscape-ID_PATCHES-dataset ;define the world size similar to the landscape imported
+  gis:apply-raster landscape-ID_PATCHES-dataset patches_ID ;get values of the landscape to variable cover
+end
+
+to imp_def_DIST_PATCHES ;-----------------------LANDSCAPE  WITH ONLY PATCHES - DIST
+  ;------------------------------------------------------Import landscape PATCHES_DIST
+  let directory_DIST_PATCHES word landscape_directory "exported_ascii_MS_HABMAT_PATCHES_ONLY_DIST/" ;define directory
+  let direct_list_DIST_PATCHES sort pathdir:list directory_DIST_PATCHES ;list of files in directory
+  let landscape_DIST_PATCHES item num_lands direct_list_DIST_PATCHES  ;get one of the landscape from the list based on num-lands and define as landscape_DIST
+  let dir_landscape_DIST_PATCHES word directory_DIST_PATCHES landscape_DIST_PATCHES
+  ;------------------------------------------------------Define landscape PATCHES_DIST
+  let landscape-DIST_PATCHES-dataset gis:load-dataset dir_landscape_DIST_PATCHES
+  gis:set-world-envelope gis:envelope-of landscape-DIST_PATCHES-dataset ;define the world size similar to the landscape imported
+  gis:apply-raster landscape-DIST_PATCHES-dataset patches_DIST ;get values of the landscape to variable cover
+end
+
+to landscape_parameters ;import landscape parameter for each landscape - habitat amount and clumpiness
+  let imp_land_par (csv:from-file word data_directory "/landscape_parameters.csv")
+  let land_values item (num_lands + 1) imp_land_par
+  set forest item 1 land_values
+  set clumpiness item 2 land_values
+end
+
+to create_hab_quality_surface ;Atkins et al. 2019
+  ;ask habitat[set Q 0.5
+  ;            set Q Q + random-float 0.5] ;;set quality values for habitat patches
+  ;ask habitat[set Q Q + random-float ns - (2 * ns)] ;;add noise to landscape by randomly increasing or decreasing patch quality in habitat
+  ;ask habitat[set pcolor scale-color green Q 0 1]
+  ;ask matrix[set Q 0 set pcolor brown]
+  foreach remove-duplicates [patches_ID] of habitat[
+    x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
+  ]
+  repeat (count habitat - length remove-duplicates [patches_ID] of habitat)[ask one-of habitat [assign]]
+  ask habitat[set pcolor scale-color green Q 0.5 1]
+  ask matrix[set Q 0 set pcolor brown]
+end
+
+to assign
+ ifelse random-float 1.1 < ac
+  [let model habitat with [Q != 0 and count neighbors with [Q = 0] > 0]
+    if any? model [
+      ask one-of model [
+        ask neighbors with [Q = 0] [set Q ([Q] of myself) + random-float 0.01]
+      ]
+    ]
+  ]
+  [let cand habitat with [Q = 0]
+    if any? cand [
+      ask one-of cand [
+        set Q 0.5 + random-float 0.4]
+    ]
+  ]
+end
+
+; CREATE AGENTS
+
 to create_turtles_half_landscape
   let half_habitat habitat with [pxcor > -50 and pxcor < 50]
   ;let half_habitat matrix with [pxcor < -100 and patches_DIST > 200]
   if any? half_habitat [
   ask n-of individuals half_habitat [sprout 1]
   ]
+  if count turtles < individuals [stop]
 end
 
 to create_turtles_all_patches ; create individuals in every patch - number of individuals is proportional to patch size.
   set id-list []
-  ;ask habitat [let id [patches_ID] of self if not member? id id-list [set id-list lput id id-list]]
   set id-list sort remove-duplicates [patches_ID] of habitat
   set N 0
   while [N < individuals][
@@ -602,27 +608,40 @@ to create_turtles_all_patches ; create individuals in every patch - number of in
       let pat habitat with [patches_ID = i] let y count pat  let size-prop (y / (count habitat))
       let nn (size-prop * individuals)
       if nn < 1 [set nn 1]
-      ask n-of nn habitat with [patches_ID = i] [ sprout 1 ]
+      ask n-of nn habitat with [patches_ID = i and not any? turtles-here] [ sprout 1 ]
       set N (N + nn)]
   ]
   ifelse count turtles < individuals
   [let rest (individuals - count turtles)
-    ask n-of rest habitat [sprout 1]]
+    ask n-of rest habitat with [not any? turtles-here] [sprout 1]]
   [let rest (count turtles - individuals)
     ask n-of rest turtles [die]]
 end
 
-to save_paths
-  file-open "paths.txt"
-  file-print (word p "," who "," t "," xcor "," ycor "," [cover] of patch-here)
-  file-close
+to specie_values ;import parameters for each specie!
+  let imp_values (csv:from-file word data_directory "/species_values.csv")
+  if Specie = "DA" [set values item 1 imp_values]
+  if Specie = "PQ" [set values item 2 imp_values]
+  if Specie = "MP" [set values item 3 imp_values]
+  ask turtles [
+  set Xmax-no item 1 values
+  set Xmin-no item 2 values
+  set expo-no item 3 values
+  set mean-ang-no item 4 values
+  set sd-ang-no item 5 values
+  set Xmax-o item 6 values
+  set Xmin-o item 7 values
+  set expo-o item 8 values
+  set mean-ang-o item 9 values
+  set sd-ang-o item 10 values
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-491
-140
-1001
-651
+489
+87
+999
+598
 -1
 -1
 2.5
@@ -648,7 +667,7 @@ ticks
 INPUTBOX
 29
 439
-425
+444
 515
 landscape_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/
@@ -670,7 +689,7 @@ Number
 INPUTBOX
 29
 595
-427
+443
 655
 output_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/output
@@ -731,7 +750,7 @@ individuals
 individuals
 0
 1000
-500.0
+1000.0
 100
 1
 NIL
@@ -763,9 +782,9 @@ NIL
 HORIZONTAL
 
 PLOT
-1199
+1028
 137
-1390
+1219
 287
 Population
 NIL
@@ -796,9 +815,9 @@ NIL
 HORIZONTAL
 
 PLOT
-1199
+1028
 303
-1863
+1692
 423
 Settlers
 NIL
@@ -828,7 +847,7 @@ Number
 INPUTBOX
 29
 524
-426
+444
 584
 data_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/data
@@ -881,9 +900,9 @@ min_en
 Number
 
 PLOT
-1200
+1029
 553
-1864
+1693
 681
 Mean Habitat Threshold of Dispersers with Plastic Behaviour
 NIL
@@ -954,21 +973,21 @@ Directories (landscapes, input data, and output)\n
 1
 
 INPUTBOX
-329
-307
-393
-367
+283
+237
+347
+297
 ac
-1.0
+0.8
 1
 0
 Number
 
 TEXTBOX
-327
-252
-432
-304
+281
+182
+386
+234
 Autocorrelation\n    of Habitat \n     Quality \n      (0-1)
 10
 0.0
@@ -997,9 +1016,9 @@ ends
 Number
 
 PLOT
-1199
+1028
 424
-1863
+1692
 551
 Dispersers
 NIL
@@ -1038,9 +1057,9 @@ PENS
 "Energy" 1.0 0 -14070903 true "" "if t > 1 and turtles with [decision = \"En\"] != 0 [plot mean [(H')] of turtles with [decision = \"En\"]]"
 
 PLOT
-1395
+1224
 137
-1587
+1416
 287
 Mean Energetic Condition of Dispersers
 NIL
@@ -1056,9 +1075,9 @@ PENS
 "default" 1.0 0 -16777216 true "" "if t > 1 [ask one-of turtles [plot mean [(En)] of turtles with [status = \"dis\"]]]\n"
 
 PLOT
-1198
+1027
 10
-1861
+1690
 130
 occupancy
 NIL
@@ -1084,7 +1103,7 @@ SWITCH
 701
 movement_parameters_output
 movement_parameters_output
-0
+1
 1
 -1000
 
@@ -1095,7 +1114,7 @@ SWITCH
 737
 occupancy_output
 occupancy_output
-0
+1
 1
 -1000
 
@@ -1106,15 +1125,15 @@ SWITCH
 737
 path_outputs
 path_outputs
-0
+1
 1
 -1000
 
 PLOT
-738
-10
-998
-130
+662
+615
+861
+765
 Histogram Q
 NIL
 NIL
@@ -1122,11 +1141,51 @@ NIL
 10.0
 0.0
 10.0
+true
 false
-false
-"" "\n"
+"  set-plot-x-range min [Q] of habitat max [Q] of habitat\n  ;set-plot-y-range 0 (count habitat / 2)\n  set-histogram-num-bars 10\n  set-plot-pen-mode 1" "\n"
 PENS
 "default" 1.0 0 -16777216 true "" "histogram [Q] of habitat"
+
+PLOT
+457
+615
+657
+765
+Max Dist per Day
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"  set-plot-x-range min [max_dist] of turtles max [max_dist] of turtles\n  ;set-plot-y-range 0 (count habitat / 2)\n  set-histogram-num-bars 10\n  set-plot-pen-mode 1" ""
+PENS
+"default" 1.0 0 -16777216 true "" "histogram [max_dist] of turtles"
+
+INPUTBOX
+241
+337
+314
+397
+dmean
+1000.0
+1
+0
+Number
+
+INPUTBOX
+322
+338
+390
+398
+dsd
+100.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?
