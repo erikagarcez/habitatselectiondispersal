@@ -1,5 +1,5 @@
 Extensions [
-  gis   pathdir  csv  profiler palette
+  gis   pathdir  csv  profiler table
 ]
 globals[ ;varibles used by all agents
   t                   ;time step - one day
@@ -47,6 +47,8 @@ globals[ ;varibles used by all agents
 
   ;--- to calculate cell-occupancy
   c_occupancy
+  occup_step
+
   v
   occupancy_0
   occupancy_05
@@ -149,7 +151,7 @@ to setup
   create_hab_quality_surface
 
 ;---------------------------------------------------------------------------------------------------
-;--------------------------------------CREATE AGENTS-------------------------------------------
+;--------------------------------------CREATE AGENTS------------------------------------------------
 ;---------------------------------------------------------------------------------------------------
 
 ;--------------------------------Create turtles in the habitat patches
@@ -163,7 +165,7 @@ to setup
   ask turtles [
    ;pen-down
    set size 1
-   set status "dis" set color red
+   set status "set" set color red
    set PR perceptual_range / resolution           ;100m represent 10 pixels, because each
    set H' mean [(Q)] of patches in-radius PR      ;Mean habitat quality within perceptual range
    set total_dist 0                               ;Total distance realized before settle
@@ -178,26 +180,15 @@ to setup
    set Ci 0.5 + random-float 0.4
   ]
 
-;----------------------------------------------------------------------------------------------------Define settlement behaviors (e_C) and creating turtles sets
-  set all_e_C [] ;avoid float problems!
-  let all_e_Ci (range initial (ends + interval) interval)
-  foreach all_e_Ci[
-  x ->
-  let a precision x 1
-  set all_e_C lput a all_e_C
-  ]
-  set each_group individuals / length all_e_C
-  ask turtles [set e_C "NA"]
-  foreach all_e_C[
-    x ->
-    ask n-of each_group turtles with [e_C = "NA"] [set e_C x ]
-  ]
+;--------------------------------Define settlement behaviors (e_C) and creating turtles sets
+  assign_settlement_behaviour
 
-;----------------------------------------------------------------------------------------------------Store initial distribution per settlement behaviour
-  store-turtles-location-initial-per-behavior
-
-;----------------------------------------------------------------------------------------------------Calculate Initial Cell Occupancy
-  cell_occupancy
+;---------------------------------------------------------------------------------------------------
+;------------------------------------- INITIAL OUTPUTS----------------------------------------------
+;---------------------------------------------------------------------------------------------------
+  set c_occupancy table:make ; create table to store occupanccy
+  cell_occupancy ;-------------------------------------------------Calculate Initial Cell Occupancy
+  ;store-turtles-location-initial-per-behavior ;--------------------Store initial distribution per settlement behaviour
 
 ;----------------------------------------------------------------------------------------------------Move to edge to start dispersal
   ask turtles[
@@ -207,12 +198,8 @@ to setup
     ;face min-one-of edge [distance myself]
     ;set heading heading + 180
     move-to one-of neighbors with [cover = 0]
+    set status "dis"
   ]
-  set occupancy_0 []
-  set occupancy_05 []
-  set occupancy_1 []
-  set occupancy_15 []
-  set occupancy_2 []
   ;-------------------------------------------------------------------------------------------GENERATE OUTPUTS------------------------------------------------------------------------------------------
    if not file-exists? "output.txt"
     [
@@ -235,18 +222,15 @@ to setup
                         "," "mean_time_set_T"                                                            ;mean time to settle in total
       )
       file-close]
+
   if occupancy_output = TRUE [
   if not file-exists? "occupancy.txt"
   [
     file-open "occupancy.txt"
-    file-print (word "run" "," "0.0" "," "0.5" "," "1.0" "," "1.5" "," "2.0")
+    file-print c_occupancy
     file-close
   ]
   ]
-
-  ;histogram of Q of habitat
-  ;set-current-plot "Histogram Q"
-
   reset-ticks
 end
 
@@ -256,7 +240,15 @@ to go
   if (ticks < 1) [reset-timer]
   tick
   set t (t + 1)
+
+  ;calculate occupancy and store in output
   cell_occupancy
+  if occupancy_output = TRUE [
+    file-open "occupancy.txt"
+    file-print c_occupancy
+    file-close
+    ]
+
   ask turtles [
 ; --------------------------------------------------------------------- For dispersers - Keep dispersing or Settling - Settlement Choice
   if status = "dis"
@@ -275,14 +267,6 @@ to go
         ]
     ]
   ]
-
-  ; Calculate occupancy by each settlement behaviours
-  set occupancy_0 lput (item 0 c_occupancy) occupancy_0
-  set occupancy_05 lput (item 1 c_occupancy) occupancy_05
-  set occupancy_1 lput (item 2 c_occupancy) occupancy_1
-  set occupancy_15 lput (item 3 c_occupancy) occupancy_15
-  set occupancy_2 lput (item 4 c_occupancy) occupancy_2
-
 
   if path_outputs = TRUE
   [let turtles_path (turtle-set turtle 0 turtle 10 turtle 20 turtle 30 turtle 40 turtle 50 turtle 60 turtle 70 turtle 80 turtle 90)
@@ -322,13 +306,6 @@ to go
         )
         file-close
     ]]
-
-    if occupancy_output = TRUE [
-    file-open "occupancy.txt"
-    file-print (word p "," occupancy_0 "," occupancy_05 "," occupancy_1 "," occupancy_15 "," occupancy_2)
-    file-close
-    ]
-
     show (word "Execution finished in "timer" seconds")
     stop]
 end
@@ -460,15 +437,7 @@ to define-output-variables
   ]
 end
 
-to cell_occupancy
-  set c_occupancy []
-  foreach all_e_C[
-  x ->
-    let occup count habitat with [count turtles-here with [e_C = x] > 0]
-    set c_occupancy lput occup c_occupancy
-  ]
 
-end
 
 to store-turtles-location-initial-per-behavior
 foreach all_e_C[
@@ -636,6 +605,39 @@ to specie_values ;import parameters for each specie!
   set sd-ang-o item 10 values
   ]
 end
+
+to assign_settlement_behaviour
+  set all_e_C [] ;empty list
+  let all_e_Ci (range initial (ends + interval) interval) ;new list with values of e_C for each behaviour
+  foreach all_e_Ci[ ;edit list to avoid float problems, then define only one decimal.
+    x -> let a precision x 1
+    set all_e_C lput a all_e_C
+  ]
+  set each_group individuals / length all_e_C ;create turtle set based on settlement behaviours by calculate the total of behaviour and divide the number of individual for that.
+  ask turtles [set e_C "NA"] ;then, assign e_C per group
+  foreach all_e_C[
+    x -> ask n-of each_group turtles with [e_C = "NA"] [set e_C x ]
+  ]
+end
+
+;---------------------------------------------------------------------------------------------------
+;----------------------------------------------OUTPUTS----------------------------------------------
+;---------------------------------------------------------------------------------------------------
+
+to cell_occupancy
+  ;set c_occupancy []
+  ;foreach all_e_C[
+  ;x ->
+  ;  let occup count habitat with [count turtles-here with [e_C = x] > 0]
+  ;  set c_occupancy lput occup c_occupancy
+  ;]
+
+  foreach all_e_C[
+  x -> set occup_step count habitat with [count turtles-here with [status = "set" and e_C = x] > 0]
+    table:put c_occupancy x occup_step
+  ]
+
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 489
@@ -715,13 +717,13 @@ NIL
 1
 
 BUTTON
-617
-22
-707
-77
+612
+23
+702
+78
 Go
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -1074,28 +1076,6 @@ false
 PENS
 "default" 1.0 0 -16777216 true "" "if t > 1 [ask one-of turtles [plot mean [(En)] of turtles with [status = \"dis\"]]]\n"
 
-PLOT
-1027
-10
-1690
-130
-occupancy
-NIL
-NIL
-0.0
-100.0
-0.0
-200.0
-true
-true
-"" ""
-PENS
-"0.0" 1.0 0 -16777216 true "" "if t > 1 [plot item 0 c_occupancy]"
-"0.5" 1.0 0 -7500403 true "" "if t > 1 [plot item 1 c_occupancy]"
-"1.0" 1.0 0 -2674135 true "" "if t > 1 [plot item 2 c_occupancy]"
-"1.5" 1.0 0 -955883 true "" "if t > 1 [plot item 3 c_occupancy]"
-"2.0" 1.0 0 -6459832 true "" "if t > 1 [plot item 4 c_occupancy]"
-
 SWITCH
 27
 668
@@ -1114,7 +1094,7 @@ SWITCH
 737
 occupancy_output
 occupancy_output
-1
+0
 1
 -1000
 
@@ -1186,6 +1166,28 @@ dsd
 1
 0
 Number
+
+PLOT
+1027
+10
+1557
+135
+Occupancytable
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"0.0" 1.0 0 -16777216 true "" "plot table:get c_occupancy 0"
+"0.5" 1.0 0 -7500403 true "" "plot table:get c_occupancy 0.5"
+"1.0" 1.0 0 -2674135 true "" "plot table:get c_occupancy 1"
+"1.5" 1.0 0 -955883 true "" "plot table:get c_occupancy 1.5"
+"2.0" 1.0 0 -6459832 true "" "plot table:get c_occupancy 2"
 
 @#$#@#$#@
 ## WHAT IS IT?
