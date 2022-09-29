@@ -233,9 +233,9 @@ to setup
 end
 
 to go
-  if (ticks = 0) [if count turtles < individuals [stop
-      show (word "Simulation for landscape " num_lands " stoped")]] ; stop simulations that had not enough individuals because of lower habitat patches. - for simulations with turtles in half landscape.
-  if (ticks < 1) [reset-timer]
+  ;if (ticks = 0) [if count turtles < individuals [stop
+  ;    show (word "Simulation for landscape " num_lands " stoped")]] ; stop simulations that had not enough individuals because of lower habitat patches. - for simulations with turtles in half landscape.
+  ;if (ticks < 1) [reset-timer]
   tick
   set t (t + 1)
 
@@ -279,8 +279,8 @@ to go
         x ->
         set group1 turtles with [e_C = x]
         set mortality precision ((each_group - count group1) / each_group) 2
-        set final_occupancy item v c_occupancy
-        set v (v + 1)
+        ;set final_occupancy item v c_occupancy
+        ;set v (v + 1)
       foreach decision_list[
         y ->
         set group group1 with [decision = y]
@@ -296,7 +296,7 @@ to go
                         "," mean_dist_T                                                                ;mean distance realized in total
                         "," mean_H'_T                                                                   ;mean habitat quality of settlement patch in total
                         "," mortality                                                                  ;mortality rate
-                        "," final_occupancy
+                        ;"," final_occupancy
                         "," recharge-rate "," discharge-rate                                           ;recharge and discharge rate
                         "," mortality_rate_dispersal                                                   ;mortality rate in dispersal
                         "," mean_En_end_T                                                              ;mean energetic condition in the end in total
@@ -325,7 +325,7 @@ to move-to-edge
 end
 
 to disperse
-  set color yellow
+  ;set color yellow
   ;set status "dis"
   set new-xcor xcor
   set new-ycor ycor
@@ -1017,7 +1017,7 @@ PLOT
 274
 1600
 394
-Dispersers
+Settler by behaviour
 NIL
 NIL
 0.0
@@ -1028,18 +1028,18 @@ true
 true
 "" ""
 PENS
-"D 0.0" 1.0 0 -3844592 true "" "plot count turtles with [status = \"dis\" and e_C = 0.0]"
-"D 0.5" 1.0 0 -2674135 true "" "plot count turtles with [status = \"dis\" and e_C = 0.5]"
-"D 1.0" 1.0 0 -12087248 true "" "plot count turtles with [status = \"dis\" and e_C = 1.0]"
-"D 1.5" 1.0 0 -14454117 true "" "plot count turtles with [status = \"dis\" and e_C = 1.5]"
-"D 2.0" 1.0 0 -8630108 true "" "plot count turtles with [status = \"dis\" and e_C = 2.0]"
+"0.0" 1.0 0 -2674135 true "" "plot count turtles with [status = \"set\" and e_C = 0.0]"
+"0.5" 1.0 0 -1184463 true "" "plot count turtles with [status = \"set\" and e_C = 0.5]"
+"1.0" 1.0 0 -955883 true "" "plot count turtles with [status = \"set\" and e_C = 1.0]"
+"1.5" 1.0 0 -11221820 true "" "plot count turtles with [status = \"set\" and e_C = 1.5]"
+"2.0" 1.0 0 -2064490 true "" "plot count turtles with [status = \"set\" and e_C = 2.0]"
 
 PLOT
-1030
-407
-1404
-537
-Mean Habitat Quality in Settlement
+1430
+140
+1681
+270
+Habitat Quality in Settlement
 NIL
 NIL
 0.0
@@ -1048,10 +1048,10 @@ NIL
 0.5
 true
 true
-"" ""
+"" " ; set-plot-x-range 0 1\n ; set-histogram-num-bars 10\n ; set-plot-pen-mode 1"
 PENS
-"Hab" 1.0 0 -5298144 true "" "if t > 1 and turtles with [decision = \"H\"] != 0 [plot mean [(H')] of turtles with [decision = \"H\"]]"
-"Energy" 1.0 0 -14070903 true "" "if t > 1 and turtles with [decision = \"En\"] != 0 [plot mean [(H')] of turtles with [decision = \"En\"]]"
+"Hab" 1.0 0 -5298144 true "" "if (count turtles with [decision = \"H\"] != 0) [plot mean [H'] of turtles with [decision = \"H\"]]"
+"Energy" 1.0 0 -14070903 true "" "if (count turtles with [decision = \"En\"] != 0) [plot mean [H'] of turtles with [decision = \"En\"]]"
 
 SWITCH
 27
@@ -1087,10 +1087,10 @@ path_outputs
 -1000
 
 PLOT
-727
-611
-926
-761
+1328
+407
+1527
+527
 Histogram Q
 NIL
 NIL
@@ -1105,10 +1105,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [Q] of habitat"
 
 PLOT
-522
-611
-722
-761
+1123
+407
+1323
+528
 Max Dist per Day
 NIL
 NIL
@@ -1152,7 +1152,7 @@ PLOT
 Occupancy
 NIL
 NIL
-1.0
+0.0
 10.0
 0.0
 10.0
@@ -1160,11 +1160,11 @@ true
 true
 "" ""
 PENS
-"0.0" 1.0 0 -2674135 true "" "plot table:get c_occupancy 0"
-"0.5" 1.0 0 -1184463 true "" "plot table:get c_occupancy 0.5"
-"1.0" 1.0 0 -955883 true "" "plot table:get c_occupancy 1"
-"1.5" 1.0 0 -11221820 true "" "plot table:get c_occupancy 1.5"
-"2.0" 1.0 0 -2064490 true "" "plot table:get c_occupancy 2"
+"0.0" 1.0 0 -2674135 true "" "if (t > 1) [plot table:get c_occupancy 0]"
+"0.5" 1.0 0 -1184463 true "" "if (t > 1) [plot table:get c_occupancy 0.5]"
+"1.0" 1.0 0 -955883 true "" "if (t > 1) [plot table:get c_occupancy 1]"
+"1.5" 1.0 0 -11221820 true "" "if (t > 1) [plot table:get c_occupancy 1.5]"
+"2.0" 1.0 0 -2064490 true "" "if (t > 1) [plot table:get c_occupancy 2]"
 
 PLOT
 1224
@@ -1193,6 +1193,96 @@ Each time step is one day
 10
 0.0
 1
+
+PLOT
+1157
+543
+1317
+692
+Hab Quality - 2.0
+NIL
+NIL
+0.0
+10.0
+0.0
+1.0
+true
+false
+"" "  set-plot-x-range 0 1\n ; set-plot-y-range 0 20\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1\n  "
+PENS
+"2.0" 1.0 1 -2064490 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 2]"
+
+PLOT
+500
+543
+663
+693
+Hab Quality - 0.0
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" "  set-plot-x-range 0 1\n ; set-plot-y-range 0 20\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1"
+PENS
+"default" 1.0 0 -2674135 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0]"
+
+PLOT
+666
+543
+826
+693
+Hab Quality - 0.5
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" "  set-plot-x-range 0 1\n ; set-plot-y-range 0 20\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1"
+PENS
+"default" 1.0 0 -4079321 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0.5]"
+
+PLOT
+829
+543
+989
+693
+Hab Quality - 1.0
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" "  set-plot-x-range 0 1\n ; set-plot-y-range 0 20\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1\n  "
+PENS
+"default" 1.0 0 -955883 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 1]"
+
+PLOT
+993
+543
+1153
+693
+Hab Quality - 1.5
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" "  set-plot-x-range 0 1\n ; set-plot-y-range 0 20\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1\n  "
+PENS
+"default" 1.0 0 -11221820 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 1.5]"
 
 @#$#@#$#@
 ## WHAT IS IT?
