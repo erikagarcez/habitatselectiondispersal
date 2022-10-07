@@ -66,6 +66,8 @@ globals[ ;varibles used by all agents
   each_group          ;total of individuals per group of behaviour
   group               ;final group of each behaviour - to calculate final outputs
   group1
+
+  turtle_path
 ]
 patches-own [
   cover               ; vegetal cover (matrix/pasture or forest)
@@ -129,7 +131,7 @@ to setup
   ;set-patch-size 0.7
   resize-world -256 256 -256 256           ; Define small landscape just for testing
   resize-world -100 100 -100 100
-  set-patch-size 2.5
+  set-patch-size 2.8
   set resolution 10                        ; Each pixel/cell is 10m
 
 ;--------------------------------Import and define landscape from directory
@@ -142,7 +144,7 @@ to setup
   set habitat patches with [cover = 1]
   set matrix patches with [cover = 0]
   set edge habitat with [count neighbors4 with [cover = 1] < 4]
-  set available-matrix patches with [cover = 0 and  patches_DIST > perceptual_range]
+  ;set available-matrix patches with [cover = 0 and  patches_DIST > perceptual_range]
 
 ;--------------------------------Define habitat quality in habitat patches
   create_hab_quality_surface
@@ -188,14 +190,16 @@ to setup
 
 ;--------------------------------Move to edge to start dispersal
   ask turtles[
-    move-to min-one-of edge [distance myself]                                               ;move individual to the edge
+   ; move-to min-one-of edge [distance myself]                                               ;move individual to the edge
     ;let available-matrix-i available-matrix with [pxcor < -100]                             ;move to edge but avoid to cross to the other half
     ;move-to min-one-of available-matrix-i [distance myself]                                 ;facing the matrix
     ;face min-one-of edge [distance myself]
     ;set heading heading + 180
-    move-to one-of neighbors with [cover = 0]
+  ;  move-to one-of neighbors with [cover = 0]
     set status "dis"
   ]
+
+  if path_outputs = TRUE [turtle_path_set] ; define turtle set to store trajectories
 
 ;---------------------------------------------------------------------------------------------------
 ;------------------------------------- INITIAL OUTPUTS----------------------------------------------
@@ -248,27 +252,17 @@ to go
     ]
 
   ask turtles [
-; --------------------------------------------------------------------- For dispersers - Keep dispersing or Settling - Settlement Choice
-  if status = "dis"
-     [if En <= 0 [die]                                                ; Mortality by low energetic condition
-      set H' mean [(Q)] of patches in-radius PR                       ; Update H'- habitat quality
-      set C (Ci * (En) ^ (e_C))                                       ; Update C of turtles
+    if En <= 0 [die]                                                ; Mortality by low energetic condition
+    update_variables
 
-      ifelse [cover] of patch-here = 0                                ; If disperser are still in the matrix...
-        [disperse
-          discharge]                                             ; keep dispersing
-        [ifelse H' >= C or En < min_En                                ; If reached any fragment - Settlement Choice: if habitat quality is higher then requirement, or if energy is too low to keep dispersing.
-          [settle]
-           ;else
-          [recharge                                                   ; If decide not to settle, recharge one time step, which represents the foraging in this fragment, and then...
-           disperse]                                                  ; Disperse.
-        ]
+    ifelse t < min_step_before_settle
+    [ if status = "dis"[disperse]]
+    [ if status = "dis"[
+      disperse
+      if [cover] of patch-here = 1 [decide_settle]
+      ]
     ]
   ]
-
-  if path_outputs = TRUE
-  [let turtles_path (turtle-set turtle 0 turtle 10 turtle 20 turtle 30 turtle 40 turtle 50 turtle 60 turtle 70 turtle 80 turtle 90)
-    ask turtles_path [save_paths]]
 
   ; Generate outputs
   if count turtles with [status = "dis"] = 0
@@ -297,7 +291,7 @@ to go
                         "," mean_H'_T                                                                   ;mean habitat quality of settlement patch in total
                         "," mortality                                                                  ;mortality rate
                         ;"," final_occupancy
-                        "," recharge-rate "," discharge-rate                                           ;recharge and discharge rate
+                        "," discharge-rate                                           ;recharge and discharge rate
                         "," mortality_rate_dispersal                                                   ;mortality rate in dispersal
                         "," mean_En_end_T                                                              ;mean energetic condition in the end in total
                         "," mean_time_set_T                                                            ;mean time to settle in total
@@ -308,95 +302,6 @@ to go
     stop]
 end
 
-to settle
-  if e_C = 0 [set color black]  if e_C = 0.5 [set color red]  if e_C = 1 [set color blue]  if e_C = 1.5 [set color white]  if e_C = 2 [set color pink]
-  ;set color black                                             ; Settle and stop.
-  set patch-q H'                                             ; register the habitat quality of the settlement area
-  set status "set"                                           ; define status as settler
-  ifelse H' >= C [set decision "H"][set decision "En"]       ; register setller by energy or by hab quality
-  set time_set t                                             ; register time to settlement
-  stop
-end
-
-to move-to-edge
-  set my_id [patches_ID] of patch-here
-  move-to min-one-of edge [distance myself]                                             ;move individual to the edge
-  move-to min-one-of available-matrix [distance myself]                                 ;facing the matrix
-end
-
-to disperse
-  ;set color yellow
-  ;set status "dis"
-  set new-xcor xcor
-  set new-ycor ycor
-  while [dist < max_dist]
-  [
-  ifelse [cover] of patch-here = 0 ;calculate the parameter step lenght and turning angles based on movement in matrix or habitat
-    [movement-matrix]
-    [movement-habitat]
-
-    if movement_parameters_output = TRUE [save_movement_parameters]
-
-    set new-xcor (new-xcor + (l / resolution * sin(ang)))                                                                ;define new coordinate X
-    set new-ycor (new-ycor + (l / resolution * cos(ang)))                                                                ;define new coordenate Y
-    set dist (dist + l)                                                                                                  ;update distance realized
-    if path_outputs = TRUE [setxy new-xcor new-ycor]                                                                     ;move to new coordinates - just when is needed to save_paths
-  ]
-  if path_outputs = FALSE [setxy new-xcor new-ycor]                                                                      ;move to new coordinates
-  set total_dist total_dist + dist
-  set dist 0                                                                                                            ;reset distance
-  if random-float 1 < mortality_rate_dispersal                                                                           ;all dispersers faces mortality after moving
-  [die]
-  if [cover] of patch-here = 1 [set my_id [patches_ID] of patch-here] ; after movement, if individual is in a habitat patch, save patch id. Then, when it reaches the matrix, it avoids to return.
-end
-
-to save_movement_parameters
-  file-open "movement_parameters.txt"
-  file-print (word p "," movement "," l "," turning_angle "," ang)
-  file-close
-end
-
-to movement-matrix ; calculate l and ang
-  set movement "matrix"
- ;ifelse not any? patches in-radius PR with [cover = 1]
-  ifelse not any? patches in-radius PR with [cover = 1 and patches_ID != [my_id] of myself]                                        ;if there is no habitat patch within PR
-    [set oriented? false
-      let RAN random-float 1
-      set l ((Xmax-no ^ (expo-no + 1) - Xmin-no ^ (expo-no + 1)) * RAN + Xmin-no ^ (expo-no + 1)) ^ (1 / (expo-no + 1))  ;define step lenght from non-oriented distribution
-      set turning_angle random-normal mean-ang-no sd-ang-no                                                              ;define turning angle from non-oriented distribution
-      set ang (heading + turning_angle)                                                                                  ;define absolute angle
-    ]
-    [set oriented? true
-      let near-habitat-patch min-one-of patches in-radius PR with [cover = 1 and patches_ID != [my_id] of myself] [distance myself]  ;define the near habitat patch which are not the same as the previous one
-      ;let near-habitat-patch min-one-of patches in-radius PR with [cover = 1] [distance myself]                          ;define the near habitat patch
-      face near-habitat-patch                                                                                            ;face the near habitat patch
-      let RAN random-float 1
-      set l ((Xmax-o ^ (expo-o + 1) - Xmin-o ^ (expo-o + 1)) * RAN + Xmin-o ^ (expo-o + 1)) ^ (1 / (expo-o + 1))         ;define step lenght from oriented distribution
-      set turning_angle random-normal mean-ang-o sd-ang-o                                                                ;define turning angle from oriented distribution
-      set ang (heading + turning_angle)                                                                                  ;define absolute angle
-    ]
-end
-
-to movement-habitat
-  set movement "habitat"
-  let RAN random-float 1
-  ;set l ((Xmax-no ^ (expo-no + 1) - Xmin-no ^ (expo-no + 1)) * RAN + Xmin-no ^ (expo-no + 1)) ^ (1 / (expo-no + 1))
-  set l ((10 ^ (-2 + 1) - 2 ^ (-2 + 1)) * RAN + 2 ^ (-2 + 1)) ^ (1 / (-2 + 1))
-  set turning_angle random-normal 0 90
-  set ang (heading + turning_angle)
-end
-
-to discharge
-  if En > 0 [
-   set En (En - (discharge-rate))
-  ]
-end
-
-to recharge
-  if En <= 1 [
-    set En (En - (recharge-rate * ([Q] of patch-here)))
-  ]
-end
 
 to define-output-variables
   ifelse count group = 0
@@ -465,10 +370,86 @@ foreach all_e_C[
   ]
 end
 
-to save_paths
-  file-open "paths.txt"
-  file-print (word p "," who "," t "," xcor "," ycor "," [cover] of patch-here)
-  file-close
+
+;---------------------------------------------------------------------------------------------------
+;--------------------------------------SUB-MODEL IN GO -------------------------------------------
+;---------------------------------------------------------------------------------------------------
+
+to update_variables
+  set H' mean [(Q)] of patches in-radius PR                       ; Update H'- habitat quality
+  set C (Ci * (En) ^ (e_C))                                       ; Update C of turtles
+end
+
+to movement-matrix ; calculate l and ang
+  set movement "matrix"
+ ;ifelse not any? patches in-radius PR with [cover = 1]
+  ifelse not any? patches in-radius PR with [cover = 1 and patches_ID != [my_id] of myself]                                        ;if there is no habitat patch within PR
+    [set oriented? false
+      let RAN random-float 1
+      set l ((Xmax-no ^ (expo-no + 1) - Xmin-no ^ (expo-no + 1)) * RAN + Xmin-no ^ (expo-no + 1)) ^ (1 / (expo-no + 1))  ;define step lenght from non-oriented distribution
+      set turning_angle random-normal mean-ang-no sd-ang-no                                                              ;define turning angle from non-oriented distribution
+      set ang (heading + turning_angle)                                                                                  ;define absolute angle
+    ]
+    [set oriented? true
+      let near-habitat-patch min-one-of patches in-radius PR with [cover = 1 and patches_ID != [my_id] of myself] [distance myself]  ;define the near habitat patch which are not the same as the previous one
+      ;let near-habitat-patch min-one-of patches in-radius PR with [cover = 1] [distance myself]                          ;define the near habitat patch
+      face near-habitat-patch                                                                                            ;face the near habitat patch
+      let RAN random-float 1
+      set l ((Xmax-o ^ (expo-o + 1) - Xmin-o ^ (expo-o + 1)) * RAN + Xmin-o ^ (expo-o + 1)) ^ (1 / (expo-o + 1))         ;define step lenght from oriented distribution
+      set turning_angle random-normal mean-ang-o sd-ang-o                                                                ;define turning angle from oriented distribution
+      set ang (heading + turning_angle)                                                                                  ;define absolute angle
+    ]
+end
+
+to movement-habitat
+  set movement "habitat"
+  let RAN random-float 1
+  ;set l ((Xmax-no ^ (expo-no + 1) - Xmin-no ^ (expo-no + 1)) * RAN + Xmin-no ^ (expo-no + 1)) ^ (1 / (expo-no + 1))
+  set l ((10 ^ (-2 + 1) - 2 ^ (-2 + 1)) * RAN + 2 ^ (-2 + 1)) ^ (1 / (-2 + 1))
+  set turning_angle random-normal 0 90
+  set ang (heading + turning_angle)
+end
+
+to disperse
+  set new-xcor xcor                                                      ;define actual coordinates
+  set new-ycor ycor                                                      ;define actual coordinates
+  while [dist < max_dist]                                                ;calculate jump per day
+  [
+  ifelse [cover] of patch-here = 0                                       ;calculate the parameter step lenght and turning angles based on movement in matrix or habitat
+    [movement-matrix]
+    [movement-habitat]
+
+    if movement_parameters_output = TRUE [save_movement_parameters]
+
+    set new-xcor (new-xcor + (l / resolution * sin(ang)))                ;define new coordinate X
+    set new-ycor (new-ycor + (l / resolution * cos(ang)))                ;define new coordinate Y
+    set dist (dist + l)                                                  ;update distance moved per day
+    if path_outputs = TRUE [save_paths]                                  ;move to new coordinates - just when is needed to save_paths because the individual will perform each movement step, and not only jumps
+  ]
+  setxy new-xcor new-ycor
+  set total_dist total_dist + dist                                       ;calculate total distance moved
+  set dist 0                                                             ;reset distance
+  if random-float 1 < mortality_rate_dispersal [die]                      ;all dispersers faces mortality after moving
+
+  if [cover] of patch-here = 1 [set my_id [patches_ID] of patch-here]    ;after movement, if individual is in a habitat patch, save patch id. Then, when it reaches the matrix, it avoids to return.
+  discharge                                                              ;individual spend energy while moving
+end
+
+to decide_settle
+  if H' >= C or En < min_En [                                ; Settlement Choice: if habitat quality is higher then requirement, or if energy is too low to keep dispersing.
+  set patch-q H'                                             ; register the habitat quality of the settlement area
+  set status "set"                                           ; define status as settler
+  ifelse H' >= C [set decision "H"][set decision "En"]       ; register setller by energy or by hab quality
+  set time_set t                                             ; register time to settlement
+  stop
+  ]
+end
+
+to discharge ; implement discharge different in habitat and in matrix.
+  if En > 0 [
+   let patch_type [cover] of patch-here + 1
+   set En (En - (discharge-rate / patch_type))  ;energy expenditure will be divided by 2 when in the habitat, and by 1 when in the matrix, by that the discharge will be double in the matrix in comparison with habitat.
+  ]
 end
 
 ;---------------------------------------------------------------------------------------------------
@@ -521,7 +502,7 @@ to landscape_parameters ;import landscape parameter for each landscape - habitat
   set clumpiness item 2 land_values
 end
 
-to create_hab_quality_surface ;Atkins et al. 2019
+to create_hab_quality_surface ;Atkins et al. 2019 - previous
   ;ask habitat[set Q 0.5
   ;            set Q Q + random-float 0.5] ;;set quality values for habitat patches
   ;ask habitat[set Q Q + random-float ns - (2 * ns)] ;;add noise to landscape by randomly increasing or decreasing patch quality in habitat
@@ -642,17 +623,35 @@ to cell_occupancy
   x -> set occup_step count habitat with [count turtles-here with [status = "set" and e_C = x] > 0]
     table:put c_occupancy x occup_step
   ]
-
 end
+
+to save_movement_parameters
+  file-open "movement_parameters.txt"
+  file-print (word p "," movement "," l "," turning_angle "," ang)
+  file-close
+end
+
+to turtle_path_set
+  set turtle_path n-of N_path turtles
+end
+
+to save_paths
+  ask turtle_path [
+  file-open "paths.txt"
+  file-print (word p "," who "," t "," new-xcor "," new-ycor "," [cover] of patch-here)
+  file-close
+  ]
+end
+
 @#$#@#$#@
 GRAPHICS-WINDOW
-503
-20
-1013
-531
+456
+12
+1026
+583
 -1
 -1
-2.5
+2.8
 1
 10
 1
@@ -673,10 +672,10 @@ ticks
 30.0
 
 INPUTBOX
-29
-439
-444
-515
+1042
+486
+1457
+562
 landscape_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/
 1
@@ -684,21 +683,21 @@ landscape_directory
 String
 
 INPUTBOX
-134
-46
-201
-106
+131
+10
+220
+70
 num_lands
-0.0
+29.0
 1
 0
 Number
 
 INPUTBOX
-29
-595
-443
-655
+1042
+642
+1456
+702
 output_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/output
 1
@@ -706,10 +705,10 @@ output_directory
 String
 
 BUTTON
-282
-47
-352
-102
+292
+14
+362
+69
 Setup
 setup
 NIL
@@ -723,13 +722,13 @@ NIL
 1
 
 BUTTON
-356
-47
-422
-102
+366
+14
+432
+69
 Go
 go
-T
+NIL
 1
 T
 OBSERVER
@@ -740,24 +739,24 @@ NIL
 1
 
 TEXTBOX
-206
-48
-264
-110
+225
+12
+283
+74
 Landscape ID from database (0 to 99)
 10
 0.0
 1
 
 SLIDER
-29
-128
-225
-161
+236
+86
+432
+119
 individuals
 individuals
 0
-1000
+5000
 1000.0
 100
 1
@@ -765,20 +764,20 @@ NIL
 HORIZONTAL
 
 CHOOSER
-31
-51
-123
-96
+26
+18
+118
+63
 Specie
 Specie
 "DA" "PQ" "MP"
 0
 
 SLIDER
-29
-166
-225
-199
+236
+127
+432
+160
 perceptual_range
 perceptual_range
 0
@@ -790,10 +789,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1027
-138
-1218
-268
+1041
+17
+1243
+145
 Population
 NIL
 NIL
@@ -808,10 +807,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "if t > 1 [plot count turtles]"
 
 SLIDER
-234
-129
-431
-162
+25
+86
+222
+119
 mortality_rate_dispersal
 mortality_rate_dispersal
 0
@@ -823,10 +822,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1029
-274
-1326
-394
+1300
+155
+1538
+285
 Settlers
 NIL
 NIL
@@ -842,21 +841,21 @@ PENS
 "Energy" 1.0 0 -14454117 true "" "if t > 1 [plot count turtles with [decision = \"En\"]]"
 
 INPUTBOX
-234
-170
-403
-230
+25
+127
+221
+187
 min_step_before_settle
-2.0
+5.0
 1
 0
 Number
 
 INPUTBOX
-29
-524
-444
-584
+1042
+571
+1457
+631
 data_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/data
 1
@@ -864,10 +863,10 @@ data_directory
 String
 
 INPUTBOX
-30
-237
-119
-299
+255
+283
+344
+345
 discharge-rate
 0.01
 1
@@ -875,21 +874,10 @@ discharge-rate
 Number
 
 INPUTBOX
-121
-237
-208
-299
-recharge-rate
-0.005
-1
-0
-Number
-
-INPUTBOX
-212
-237
-274
-299
+353
+283
+415
+345
 min_en
 0.3
 1
@@ -897,11 +885,11 @@ min_en
 Number
 
 PLOT
-1357
-10
-1682
-134
-Mean Habitat Threshold of Dispersers with Plastic Behaviour
+1252
+15
+1505
+145
+Mean C of Dispersers
 NIL
 NIL
 0.0
@@ -919,10 +907,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 2.0]]"
 
 INPUTBOX
-30
-336
-89
-396
+238
+387
+297
+447
 initial
 0.0
 1
@@ -930,50 +918,40 @@ initial
 Number
 
 TEXTBOX
-40
-211
-190
-229
+256
+261
+406
+279
 Energetic dynamics
 12
 0.0
 1
 
 TEXTBOX
-181
-10
-254
-34
-INPUTS 
-20
-0.0
-1
-
-TEXTBOX
-33
-312
-231
-342
+241
+363
+439
+393
 Habitat Selection Behaviors
 12
 0.0
 1
 
 TEXTBOX
-34
-415
-384
-433
+1047
+462
+1397
+480
 Directories (landscapes, input data, and output)\n
 12
 0.0
 1
 
 INPUTBOX
-281
-239
-345
-299
+263
+183
+327
+243
 ac
 0.8
 1
@@ -981,20 +959,20 @@ ac
 Number
 
 TEXTBOX
-351
-244
-456
-296
+333
+188
+438
+240
 Autocorrelation\n    of Habitat \n     Quality \n      (0-1)
 10
 0.0
 1
 
 INPUTBOX
-96
-336
-150
-396
+304
+387
+358
+447
 interval
 0.5
 1
@@ -1002,10 +980,10 @@ interval
 Number
 
 INPUTBOX
-160
-336
-216
-396
+368
+387
+424
+447
 ends
 2.0
 1
@@ -1013,10 +991,10 @@ ends
 Number
 
 PLOT
-1329
-274
-1600
-394
+1544
+154
+1788
+283
 Settler by behaviour
 NIL
 NIL
@@ -1035,10 +1013,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "plot count turtles with [status = \"set\" and e_C = 2.0]"
 
 PLOT
-1430
-140
-1681
-270
+1043
+155
+1294
+285
 Habitat Quality in Settlement
 NIL
 NIL
@@ -1054,10 +1032,10 @@ PENS
 "Energy" 1.0 0 -14070903 true "" "if (count turtles with [decision = \"En\"] != 0) [plot mean [H'] of turtles with [decision = \"En\"]]"
 
 SWITCH
-27
-668
-305
-701
+32
+525
+284
+558
 movement_parameters_output
 movement_parameters_output
 1
@@ -1065,10 +1043,10 @@ movement_parameters_output
 -1000
 
 SWITCH
-26
-704
-215
-737
+28
+312
+217
+345
 occupancy_output
 occupancy_output
 0
@@ -1076,21 +1054,21 @@ occupancy_output
 -1000
 
 SWITCH
-223
-704
-377
-737
+33
+569
+187
+602
 path_outputs
 path_outputs
-1
+0
 1
 -1000
 
 PLOT
-1328
-407
-1527
-527
+647
+592
+819
+712
 Histogram Q
 NIL
 NIL
@@ -1105,10 +1083,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [Q] of habitat"
 
 PLOT
-1123
-407
-1323
-528
+460
+591
+639
+712
 Max Dist per Day
 NIL
 NIL
@@ -1123,10 +1101,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [max_dist] of turtles"
 
 INPUTBOX
-241
-337
-314
-397
+44
+218
+117
+278
 dmean
 1000.0
 1
@@ -1134,10 +1112,10 @@ dmean
 Number
 
 INPUTBOX
-322
-338
-390
-398
+125
+219
+193
+279
 dsd
 100.0
 1
@@ -1145,10 +1123,10 @@ dsd
 Number
 
 PLOT
-1027
-10
-1346
-135
+1513
+15
+1788
+145
 Occupancy
 NIL
 NIL
@@ -1167,10 +1145,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "if (t > 1) [plot table:get c_occupancy 2]"
 
 PLOT
-1224
-138
-1424
-269
+827
+592
+1021
+712
 Energetic Condition
 NIL
 NIL
@@ -1184,22 +1162,12 @@ false
 PENS
 "default" 1.0 0 -16777216 true "" "histogram [En] of turtles"
 
-TEXTBOX
-413
-188
-489
-218
-Each time step is one day
-10
-0.0
-1
-
 PLOT
-1157
-543
-1317
-692
-Hab Quality - 2.0
+1700
+293
+1860
+442
+Hab Quality C 2.0
 NIL
 NIL
 0.0
@@ -1213,11 +1181,11 @@ PENS
 "2.0" 1.0 1 -2064490 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 2]"
 
 PLOT
-500
-543
-663
-693
-Hab Quality - 0.0
+1043
+293
+1206
+443
+Hab Quality C 0.0
 NIL
 NIL
 0.0
@@ -1231,11 +1199,11 @@ PENS
 "default" 1.0 0 -2674135 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0]"
 
 PLOT
-666
-543
-826
-693
-Hab Quality - 0.5
+1209
+293
+1369
+443
+Hab Quality C 0.5
 NIL
 NIL
 0.0
@@ -1249,11 +1217,11 @@ PENS
 "default" 1.0 0 -4079321 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0.5]"
 
 PLOT
-829
-543
-989
-693
-Hab Quality - 1.0
+1372
+293
+1532
+443
+Hab Quality C 1.0
 NIL
 NIL
 0.0
@@ -1267,11 +1235,11 @@ PENS
 "default" 1.0 0 -955883 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 1]"
 
 PLOT
-993
-543
-1153
-693
-Hab Quality - 1.5
+1536
+293
+1696
+443
+Hab Quality C 1.5
 NIL
 NIL
 0.0
@@ -1283,6 +1251,57 @@ false
 "" "  set-plot-x-range 0 1\n ; set-plot-y-range 0 20\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1\n  "
 PENS
 "default" 1.0 0 -11221820 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 1.5]"
+
+TEXTBOX
+46
+194
+251
+224
+Distance Maxima Per Day
+12
+0.0
+1
+
+INPUTBOX
+32
+607
+188
+667
+N_path
+5.0
+1
+0
+Number
+
+TEXTBOX
+198
+600
+348
+645
+Save complete trajectories of N random turtles
+12
+0.0
+1
+
+TEXTBOX
+33
+497
+242
+527
+Movement Patterns Outputs
+14
+0.0
+1
+
+TEXTBOX
+292
+516
+442
+576
+Save step lenght and turning angle of all individuals in Matrix and Habitat
+12
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
