@@ -68,6 +68,10 @@ globals[ ;varibles used by all agents
   group1
 
   turtle_path
+
+  ;--- count mortality
+  mort_pred ;mortality by predation during dispersal
+  mort_ener ;mortality by lack of energy - starvation
 ]
 patches-own [
   cover               ; vegetal cover (matrix/pasture or forest)
@@ -120,6 +124,7 @@ turtles-own[
 
 to setup
   clear-all
+  reset-timer
   random-seed 10
   set-current-directory output_directory ; Define directory to save output
   set t 0 ; Start time steps at 0
@@ -130,8 +135,9 @@ to setup
   ;resize-world -512 512 -512 512           ; Define landscape 1024x1024.
   ;set-patch-size 0.7
   resize-world -256 256 -256 256           ; Define small landscape just for testing
-  resize-world -100 100 -100 100
-  set-patch-size 2.8
+  set-patch-size 1.5
+  ;resize-world -100 100 -100 100
+  ;set-patch-size 2.8
   set resolution 10                        ; Each pixel/cell is 10m
 
 ;--------------------------------Import and define landscape from directory
@@ -149,6 +155,9 @@ to setup
 ;--------------------------------Define habitat quality in habitat patches
   create_hab_quality_surface
 
+  ; mortality counts
+  set mort_pred 0
+  set mort_ener 0
 ;---------------------------------------------------------------------------------------------------
 ;--------------------------------------CREATE AGENTS------------------------------------------------
 ;---------------------------------------------------------------------------------------------------
@@ -234,12 +243,14 @@ to setup
       )
       file-close]
   reset-ticks
+  show (word "Setup timer:" timer)
 end
 
 to go
   ;if (ticks = 0) [if count turtles < individuals [stop
   ;    show (word "Simulation for landscape " num_lands " stoped")]] ; stop simulations that had not enough individuals because of lower habitat patches. - for simulations with turtles in half landscape.
-  ;if (ticks < 1) [reset-timer]
+  if (ticks < 1) [reset-timer]
+  ;show t - use this for headless simulations
   tick
   set t (t + 1)
 
@@ -252,14 +263,17 @@ to go
     ]
 
   ask turtles [
-    if En <= 0 [die]                                                ; Mortality by low energetic condition
+    if En <= 0 [set mort_ener mort_ener + 1
+      die]                                                ; Mortality by low energetic condition
     update_variables
 
     ifelse t < min_step_before_settle
     [ if status = "dis"[disperse]]
     [ if status = "dis"[
       disperse
-      if [cover] of patch-here = 1 [decide_settle]
+      if [cover] of patch-here = 1 [
+        set my_id [patches_ID] of patch-here
+        decide_settle]
       ]
     ]
   ]
@@ -429,7 +443,8 @@ to disperse
   setxy new-xcor new-ycor
   set total_dist total_dist + dist                                       ;calculate total distance moved
   set dist 0                                                             ;reset distance
-  if random-float 1 < mortality_rate_dispersal [die]                      ;all dispersers faces mortality after moving
+  if random-float 1 < mortality_rate_dispersal [set mort_pred mort_pred + 1
+                                               die]                      ;all dispersers faces mortality after moving
 
   if [cover] of patch-here = 1 [set my_id [patches_ID] of patch-here]    ;after movement, if individual is in a habitat patch, save patch id. Then, when it reaches the matrix, it avoids to return.
   discharge                                                              ;individual spend energy while moving
@@ -443,6 +458,24 @@ to decide_settle
   set time_set t                                             ; register time to settlement
   stop
   ]
+
+  ;let area patches in-radius PR
+  ;if max [Q] of area >= C [
+  ;  move-to max-one-of area [Q]
+  ;  ;set patch-q H' mudar isso, e armazenar o valor do pixel e não da area toda.
+  ;  set status "set"
+  ;  set decision "H"
+  ;  set time_set t
+  ;  stop
+  ;]
+
+  ;if En < min_En [
+  ;  ;set patch-q H' mudar isso, e armazenar o valor do pixel e não da area toda.
+  ;  set status "set"
+  ;  set decision "En"
+  ;  set time_set t
+  ;  stop
+  ;]
 end
 
 to discharge ; implement discharge different in habitat and in matrix.
@@ -508,20 +541,23 @@ to create_hab_quality_surface ;Atkins et al. 2019 - previous
   ;ask habitat[set Q Q + random-float ns - (2 * ns)] ;;add noise to landscape by randomly increasing or decreasing patch quality in habitat
   ;ask habitat[set pcolor scale-color green Q 0 1]
   ;ask matrix[set Q 0 set pcolor brown]
-  foreach remove-duplicates [patches_ID] of habitat[
+
+  let j remove-duplicates [patches_ID] of habitat
+  foreach j [
     x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
   ]
-  repeat (count habitat - length remove-duplicates [patches_ID] of habitat)[ask one-of habitat [assign]]
+  ;repeat (count habitat - length remove-duplicates [patches_ID] of habitat)[ask one-of habitat [assign]]
+  ask habitat [assign]
   ask habitat[set pcolor scale-color green Q 0.5 1]
   ask matrix[set Q 0 set pcolor brown]
 end
 
 to assign
  ifelse random-float 1.1 < ac
-  [let model habitat with [Q != 0 and count neighbors with [Q = 0] > 0]
+  [let model habitat with [Q != 0 and count neighbors with [cover = 1 and Q = 0] > 0]
     if any? model [
       ask one-of model [
-        ask neighbors with [Q = 0] [set Q ([Q] of myself) + random-float 0.01]
+        ask neighbors with [cover = 1 and Q = 0] [set Q ([Q] of myself) + random-float 0.01]
       ]
     ]
   ]
@@ -642,16 +678,15 @@ to save_paths
   file-close
   ]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 456
 12
-1026
-583
+1233
+790
 -1
 -1
-2.8
+1.5
 1
 10
 1
@@ -661,10 +696,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--100
-100
--100
-100
+-256
+256
+-256
+256
 1
 1
 1
@@ -672,10 +707,10 @@ ticks
 30.0
 
 INPUTBOX
-1042
-486
-1457
-562
+1242
+482
+1657
+558
 landscape_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/
 1
@@ -688,16 +723,16 @@ INPUTBOX
 220
 70
 num_lands
-29.0
+0.0
 1
 0
 Number
 
 INPUTBOX
-1042
-642
-1456
-702
+1242
+638
+1656
+698
 output_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/output
 1
@@ -728,7 +763,7 @@ BUTTON
 69
 Go
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -756,8 +791,8 @@ SLIDER
 individuals
 individuals
 0
-5000
-1000.0
+1000
+200.0
 100
 1
 NIL
@@ -789,17 +824,17 @@ NIL
 HORIZONTAL
 
 PLOT
-1041
-17
-1243
-145
+1241
+13
+1443
+141
 Population
 NIL
 NIL
 0.0
 0.0
 0.0
-500.0
+0.0
 true
 false
 "" ""
@@ -822,10 +857,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1300
-155
-1538
-285
+1500
+151
+1738
+281
 Settlers
 NIL
 NIL
@@ -852,10 +887,10 @@ min_step_before_settle
 Number
 
 INPUTBOX
-1042
-571
-1457
-631
+1242
+567
+1657
+627
 data_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/data
 1
@@ -885,10 +920,10 @@ min_en
 Number
 
 PLOT
-1252
-15
-1505
-145
+1452
+11
+1705
+141
 Mean C of Dispersers
 NIL
 NIL
@@ -938,10 +973,10 @@ Habitat Selection Behaviors
 1
 
 TEXTBOX
-1047
-462
-1397
-480
+1247
+458
+1597
+476
 Directories (landscapes, input data, and output)\n
 12
 0.0
@@ -953,7 +988,7 @@ INPUTBOX
 327
 243
 ac
-0.8
+0.5
 1
 0
 Number
@@ -991,10 +1026,10 @@ ends
 Number
 
 PLOT
-1544
-154
-1788
-283
+1744
+150
+1988
+279
 Settler by behaviour
 NIL
 NIL
@@ -1013,10 +1048,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "plot count turtles with [status = \"set\" and e_C = 2.0]"
 
 PLOT
-1043
-155
-1294
-285
+1243
+151
+1494
+281
 Habitat Quality in Settlement
 NIL
 NIL
@@ -1065,10 +1100,10 @@ path_outputs
 -1000
 
 PLOT
-647
-592
-819
-712
+1435
+709
+1607
+829
 Histogram Q
 NIL
 NIL
@@ -1083,10 +1118,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [Q] of habitat"
 
 PLOT
-460
-591
-639
-712
+1248
+708
+1427
+829
 Max Dist per Day
 NIL
 NIL
@@ -1123,10 +1158,10 @@ dsd
 Number
 
 PLOT
-1513
-15
-1788
-145
+1713
+11
+1988
+141
 Occupancy
 NIL
 NIL
@@ -1145,10 +1180,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "if (t > 1) [plot table:get c_occupancy 2]"
 
 PLOT
-827
-592
-1021
-712
+1615
+709
+1809
+829
 Energetic Condition
 NIL
 NIL
@@ -1163,10 +1198,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [En] of turtles"
 
 PLOT
-1700
-293
-1860
-442
+1900
+289
+2060
+438
 Hab Quality C 2.0
 NIL
 NIL
@@ -1181,10 +1216,10 @@ PENS
 "2.0" 1.0 1 -2064490 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 2]"
 
 PLOT
-1043
-293
-1206
-443
+1243
+289
+1406
+439
 Hab Quality C 0.0
 NIL
 NIL
@@ -1199,10 +1234,10 @@ PENS
 "default" 1.0 0 -2674135 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0]"
 
 PLOT
-1209
-293
-1369
-443
+1409
+289
+1569
+439
 Hab Quality C 0.5
 NIL
 NIL
@@ -1217,10 +1252,10 @@ PENS
 "default" 1.0 0 -4079321 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0.5]"
 
 PLOT
-1372
-293
-1532
-443
+1572
+289
+1732
+439
 Hab Quality C 1.0
 NIL
 NIL
@@ -1235,10 +1270,10 @@ PENS
 "default" 1.0 0 -955883 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 1]"
 
 PLOT
-1536
-293
-1696
-443
+1736
+289
+1896
+439
 Hab Quality C 1.5
 NIL
 NIL
@@ -1301,6 +1336,96 @@ TEXTBOX
 Save step lenght and turning angle of all individuals in Matrix and Habitat
 12
 0.0
+1
+
+BUTTON
+1695
+455
+2059
+490
+show mean habitat quality in settlement per behaviour
+let mean-Q table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [Q] of turtles with [e_C = x]\n    table:put mean-Q x m\n  ]\nshow mean-Q
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+1733
+494
+2030
+527
+show mean linear distance per behaviour
+let mean-ld table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [linear_dist] of turtles with [e_C = x]\n    table:put mean-ld x m\n  ]\nshow mean-ld
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+1746
+531
+2018
+564
+show mean total distance per behaviour
+let mean-td table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [total_dist] of turtles with [e_C = x]\n    table:put mean-td x m\n  ]\nshow mean-td
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+1702
+584
+1857
+629
+Mortality by Predation
+mort_pred
+1
+1
+11
+
+MONITOR
+1869
+584
+2028
+629
+Mortality by Starvation
+mort_ener
+1
+1
+11
+
+BUTTON
+31
+389
+113
+422
+profiler
+profiler:start         ;; start profiling\nsetup                  ;; set up the model\nrepeat 5 [ go ]       ;; run something you want to measure\nprofiler:stop          ;; stop profiling\nprint profiler:report  ;; view the results\nprofiler:reset         ;; clear the data\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
 1
 
 @#$#@#$#@
