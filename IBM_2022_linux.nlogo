@@ -134,10 +134,10 @@ to setup
 ;---------------------------------------------------------------------------------------------------
   ;resize-world -512 512 -512 512           ; Define landscape 1024x1024.
   ;set-patch-size 0.7
-  resize-world -256 256 -256 256           ; Define small landscape just for testing
-  set-patch-size 1.5
-  ;resize-world -100 100 -100 100
-  ;set-patch-size 2.8
+  ;resize-world -256 256 -256 256           ; Define small landscape just for testing
+  ;set-patch-size 1.5
+  resize-world -100 100 -100 100
+  set-patch-size 2.8
   set resolution 10                        ; Each pixel/cell is 10m
 
 ;--------------------------------Import and define landscape from directory
@@ -153,7 +153,9 @@ to setup
   ;set available-matrix patches with [cover = 0 and  patches_DIST > perceptual_range]
 
 ;--------------------------------Define habitat quality in habitat patches
-  create_hab_quality_surface
+  ifelse import_hab_quality_surface = true
+  [import_Q]
+  [create_hab_quality_surface]
 
   ; mortality counts
   set mort_pred 0
@@ -542,10 +544,11 @@ to create_hab_quality_surface ;Atkins et al. 2019 - previous
   ;ask habitat[set pcolor scale-color green Q 0 1]
   ;ask matrix[set Q 0 set pcolor brown]
 
-  let j remove-duplicates [patches_ID] of habitat
-  foreach j [
-    x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
-  ]
+  ;let j remove-duplicates [patches_ID] of habitat
+  ;foreach j [
+  ;  x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
+  ;]
+  ask one-of habitat [set Q 0.5 + random-float 0.4]
   ;repeat (count habitat - length remove-duplicates [patches_ID] of habitat)[ask one-of habitat [assign]]
   ask habitat [assign]
   ask habitat[set pcolor scale-color green Q 0.5 1]
@@ -567,6 +570,21 @@ to assign
         set Q 0.5 + random-float 0.4]
     ]
   ]
+end
+
+to import_Q
+   ;------------------------------------------------------Import landscape
+  let directory_Q word landscape_directory hab_quality_folder;define directory
+  let direct_list_Q sort pathdir:list directory_Q ;list of files in directory in order
+  let surface item num_lands direct_list_Q ;get one of the landscape from the list based on num-lands and define as landscape
+  let dir_landscape_Q word directory_Q surface ;set the new_landscape with the directory to import
+  show direct_list_Q
+  ;------------------------------------------------------Define landscape
+  let Q-dataset gis:load-dataset dir_landscape_Q
+  gis:set-world-envelope-ds gis:envelope-of Q-dataset ;define the world size similar to the landscape imported
+  gis:apply-raster Q-dataset Q ;get values of the landscape to variable hab quality (Q)
+  ask habitat[set pcolor scale-color green Q 0.5 1]
+  ask matrix[set Q 0 set pcolor brown]
 end
 
 ; CREATE AGENTS
@@ -680,13 +698,13 @@ to save_paths
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-456
-12
-1233
-790
+551
+146
+1121
+717
 -1
 -1
-1.5
+2.8
 1
 10
 1
@@ -696,10 +714,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--256
-256
--256
-256
+-100
+100
+-100
+100
 1
 1
 1
@@ -707,10 +725,10 @@ ticks
 30.0
 
 INPUTBOX
-1242
-482
-1657
-558
+1133
+481
+1548
+557
 landscape_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/
 1
@@ -723,16 +741,16 @@ INPUTBOX
 220
 70
 num_lands
-0.0
+1.0
 1
 0
 Number
 
 INPUTBOX
-1242
-638
-1656
-698
+1133
+637
+1547
+697
 output_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/output
 1
@@ -824,10 +842,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1241
-13
-1443
-141
+1132
+12
+1334
+140
 Population
 NIL
 NIL
@@ -857,10 +875,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1500
-151
-1738
-281
+1391
+150
+1629
+280
 Settlers
 NIL
 NIL
@@ -876,10 +894,10 @@ PENS
 "Energy" 1.0 0 -14454117 true "" "if t > 1 [plot count turtles with [decision = \"En\"]]"
 
 INPUTBOX
-25
-127
-221
-187
+43
+125
+201
+185
 min_step_before_settle
 5.0
 1
@@ -887,10 +905,10 @@ min_step_before_settle
 Number
 
 INPUTBOX
-1242
-567
-1657
-627
+1133
+566
+1548
+626
 data_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/data
 1
@@ -898,10 +916,10 @@ data_directory
 String
 
 INPUTBOX
-255
-283
-344
-345
+41
+401
+130
+463
 discharge-rate
 0.01
 1
@@ -909,10 +927,10 @@ discharge-rate
 Number
 
 INPUTBOX
-353
-283
-415
-345
+139
+401
+201
+463
 min_en
 0.3
 1
@@ -920,10 +938,10 @@ min_en
 Number
 
 PLOT
-1452
-11
-1705
-141
+1343
+10
+1596
+140
 Mean C of Dispersers
 NIL
 NIL
@@ -942,10 +960,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 2.0]]"
 
 INPUTBOX
-238
-387
-297
-447
+40
+315
+99
+375
 initial
 0.0
 1
@@ -953,30 +971,30 @@ initial
 Number
 
 TEXTBOX
-256
-261
-406
-279
+42
+379
+192
+397
 Energetic dynamics
 12
 0.0
 1
 
 TEXTBOX
-241
-363
-439
-393
+39
+291
+237
+321
 Habitat Selection Behaviors
 12
 0.0
 1
 
 TEXTBOX
-1247
-458
-1597
-476
+1138
+457
+1488
+475
 Directories (landscapes, input data, and output)\n
 12
 0.0
@@ -984,9 +1002,9 @@ Directories (landscapes, input data, and output)\n
 
 INPUTBOX
 263
-183
+335
 327
-243
+395
 ac
 0.5
 1
@@ -994,20 +1012,20 @@ ac
 Number
 
 TEXTBOX
-333
-188
-438
-240
+334
+336
+439
+388
 Autocorrelation\n    of Habitat \n     Quality \n      (0-1)
 10
 0.0
 1
 
 INPUTBOX
-304
-387
-358
-447
+102
+315
+156
+375
 interval
 0.5
 1
@@ -1015,10 +1033,10 @@ interval
 Number
 
 INPUTBOX
-368
-387
-424
-447
+166
+315
+222
+375
 ends
 2.0
 1
@@ -1026,10 +1044,10 @@ ends
 Number
 
 PLOT
-1744
-150
-1988
-279
+1635
+149
+1879
+278
 Settler by behaviour
 NIL
 NIL
@@ -1048,10 +1066,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "plot count turtles with [status = \"set\" and e_C = 2.0]"
 
 PLOT
-1243
-151
-1494
-281
+1134
+150
+1385
+280
 Habitat Quality in Settlement
 NIL
 NIL
@@ -1067,10 +1085,10 @@ PENS
 "Energy" 1.0 0 -14070903 true "" "if (count turtles with [decision = \"En\"] != 0) [plot mean [H'] of turtles with [decision = \"En\"]]"
 
 SWITCH
-32
-525
-284
-558
+35
+542
+287
+575
 movement_parameters_output
 movement_parameters_output
 1
@@ -1078,10 +1096,10 @@ movement_parameters_output
 -1000
 
 SWITCH
-28
-312
-217
-345
+36
+471
+225
+504
 occupancy_output
 occupancy_output
 0
@@ -1089,10 +1107,10 @@ occupancy_output
 -1000
 
 SWITCH
-33
-569
-187
-602
+36
+586
+190
+619
 path_outputs
 path_outputs
 0
@@ -1100,10 +1118,10 @@ path_outputs
 -1000
 
 PLOT
-1435
-709
-1607
-829
+740
+16
+912
+136
 Histogram Q
 NIL
 NIL
@@ -1118,10 +1136,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [Q] of habitat"
 
 PLOT
-1248
-708
-1427
-829
+553
+15
+732
+136
 Max Dist per Day
 NIL
 NIL
@@ -1158,10 +1176,10 @@ dsd
 Number
 
 PLOT
-1713
-11
-1988
-141
+1604
+10
+1879
+140
 Occupancy
 NIL
 NIL
@@ -1180,10 +1198,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "if (t > 1) [plot table:get c_occupancy 2]"
 
 PLOT
-1615
-709
-1809
-829
+920
+16
+1114
+136
 Energetic Condition
 NIL
 NIL
@@ -1198,10 +1216,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [En] of turtles"
 
 PLOT
-1900
-289
-2060
-438
+1791
+288
+1951
+437
 Hab Quality C 2.0
 NIL
 NIL
@@ -1216,10 +1234,10 @@ PENS
 "2.0" 1.0 1 -2064490 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 2]"
 
 PLOT
-1243
-289
-1406
-439
+1134
+288
+1297
+438
 Hab Quality C 0.0
 NIL
 NIL
@@ -1234,10 +1252,10 @@ PENS
 "default" 1.0 0 -2674135 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0]"
 
 PLOT
-1409
-289
-1569
-439
+1300
+288
+1460
+438
 Hab Quality C 0.5
 NIL
 NIL
@@ -1252,10 +1270,10 @@ PENS
 "default" 1.0 0 -4079321 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 0.5]"
 
 PLOT
-1572
-289
-1732
-439
+1463
+288
+1623
+438
 Hab Quality C 1.0
 NIL
 NIL
@@ -1270,10 +1288,10 @@ PENS
 "default" 1.0 0 -955883 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 1]"
 
 PLOT
-1736
-289
-1896
-439
+1627
+288
+1787
+438
 Hab Quality C 1.5
 NIL
 NIL
@@ -1298,10 +1316,10 @@ Distance Maxima Per Day
 1
 
 INPUTBOX
-32
-607
-188
-667
+35
+624
+191
+684
 N_path
 5.0
 1
@@ -1309,40 +1327,40 @@ N_path
 Number
 
 TEXTBOX
-198
-600
-348
-645
+201
+617
+351
+662
 Save complete trajectories of N random turtles
 12
 0.0
 1
 
 TEXTBOX
-33
-497
-242
-527
+36
+514
+245
+544
 Movement Patterns Outputs
 14
 0.0
 1
 
 TEXTBOX
-292
-516
-442
-576
+295
+533
+445
+593
 Save step lenght and turning angle of all individuals in Matrix and Habitat
 12
 0.0
 1
 
 BUTTON
-1695
-455
-2059
-490
+1563
+483
+1927
+518
 show mean habitat quality in settlement per behaviour
 let mean-Q table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [Q] of turtles with [e_C = x]\n    table:put mean-Q x m\n  ]\nshow mean-Q
 NIL
@@ -1356,10 +1374,10 @@ NIL
 1
 
 BUTTON
-1733
-494
-2030
-527
+1601
+522
+1898
+555
 show mean linear distance per behaviour
 let mean-ld table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [linear_dist] of turtles with [e_C = x]\n    table:put mean-ld x m\n  ]\nshow mean-ld
 NIL
@@ -1373,10 +1391,10 @@ NIL
 1
 
 BUTTON
-1746
-531
-2018
-564
+1614
+559
+1886
+592
 show mean total distance per behaviour
 let mean-td table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [total_dist] of turtles with [e_C = x]\n    table:put mean-td x m\n  ]\nshow mean-td
 NIL
@@ -1390,10 +1408,10 @@ NIL
 1
 
 MONITOR
-1702
-584
-1857
-629
+1570
+612
+1725
+657
 Mortality by Predation
 mort_pred
 1
@@ -1401,10 +1419,10 @@ mort_pred
 11
 
 MONITOR
-1869
-584
-2028
-629
+1737
+612
+1896
+657
 Mortality by Starvation
 mort_ener
 1
@@ -1412,10 +1430,10 @@ mort_ener
 11
 
 BUTTON
-31
-389
-113
-422
+444
+24
+526
+57
 profiler
 profiler:start         ;; start profiling\nsetup                  ;; set up the model\nrepeat 5 [ go ]       ;; run something you want to measure\nprofiler:stop          ;; stop profiling\nprint profiler:report  ;; view the results\nprofiler:reset         ;; clear the data\n
 NIL
@@ -1426,6 +1444,48 @@ NIL
 NIL
 NIL
 NIL
+1
+
+SWITCH
+262
+232
+487
+265
+import_hab_quality_surface
+import_hab_quality_surface
+0
+1
+-1000
+
+TEXTBOX
+267
+201
+501
+228
+Choose to import a .asc file with habitat quality information, or to generate based on ac
+10
+0.0
+1
+
+INPUTBOX
+262
+271
+436
+331
+hab_quality_folder
+hab_quality/teste/
+1
+0
+String
+
+TEXTBOX
+306
+177
+456
+195
+Habitat Quality Surface
+12
+0.0
 1
 
 @#$#@#$#@
