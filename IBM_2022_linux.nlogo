@@ -1,5 +1,5 @@
 Extensions [
-  gis   pathdir  csv  profiler table
+  gis   pathdir  csv  profiler table r
 ]
 globals[ ;varibles used by all agents
   t                   ;time step - one day
@@ -12,7 +12,8 @@ globals[ ;varibles used by all agents
   habitat             ;agentset of habitat patches
   matrix              ;agentset of matrix patches
   edge                ;agentset of edge patches
-  available-matrix    ;agentset of matrix patches with specific distance (95-105 cells) from the edge, to initiate individuals, and avoid turtles to be moved to isolated matrix cells within habitat patches.
+
+  landscape
 
   list-colors         ;code of colors per group of turtles
 
@@ -134,10 +135,10 @@ to setup
 ;---------------------------------------------------------------------------------------------------
   ;resize-world -512 512 -512 512           ; Define landscape 1024x1024.
   ;set-patch-size 0.7
-  ;resize-world -256 256 -256 256           ; Define small landscape just for testing
-  ;set-patch-size 1.5
-  resize-world -100 100 -100 100
-  set-patch-size 2.8
+  resize-world -256 256 -256 256           ; Define small landscape just for testing
+  set-patch-size 1
+  ;resize-world -100 100 -100 100
+  ;set-patch-size 2.8
   set resolution 10                        ; Each pixel/cell is 10m
 
 ;--------------------------------Import and define landscape from directory
@@ -150,7 +151,6 @@ to setup
   set habitat patches with [cover = 1]
   set matrix patches with [cover = 0]
   set edge habitat with [count neighbors4 with [cover = 1] < 4]
-  ;set available-matrix patches with [cover = 0 and  patches_DIST > perceptual_range]
 
 ;--------------------------------Define habitat quality in habitat patches
   ifelse import_hab_quality_surface = true
@@ -174,7 +174,7 @@ to setup
 ;--------------------------------Define turtles variables
   ask turtles [
    ;pen-down
-   set size 1
+   set size 4
    set status "set" set color red
    set PR perceptual_range / resolution           ;100m represent 10 pixels, because each
    set H' mean [(Q)] of patches in-radius PR      ;Mean habitat quality within perceptual range
@@ -224,24 +224,13 @@ to setup
   ]
   ]
 
-  if not file-exists? "output.txt"  ; CHECAR NO FINAL!!!
-    [
-    file-open "output.txt"
+  if not file-exists? "output.txt"
+    [file-open "output.txt"
       file-print (word "run"
-                       "," "specie" "," "perceptual_range" "," "landscape_number" "," "habitat_amount" "," "clumpiness"
-                        "," "min_en"                                                                     ;minimum energy required
-                        "," "e_C"                                                                        ;expoent of decreasing habitat quality requirement with energy
-                        "," "decision"
-                        "," "total_set_T"                                                                ;total settlers in total
-                        "," "mean_linear_dist_T"                                                         ;mean linear distance in total
-                        "," "mean_dist_T"                                                                ;mean distance realized in total
-                        "," "mean_H_T"                                                                   ;mean habitat quality of settlement patch in total
-                        "," "mortality"                                                                  ;mortality rate
-                        "," "final_occupancy"                                                            ;final occupancy per behaviour
-                        "," "recharge-rate" "," "discharge-rate"                                         ;recharge and discharge rate
-                        "," "mortality_rate_dispersal"                                                   ;mortality rate in dispersal
-                        "," "mean_En_end_T"                                                              ;mean energetic condition in the end in total
-                        "," "mean_time_set_T"                                                            ;mean time to settle in total
+                       "," "specie" "," "perceptual_range" "," "landscape_number" "," "habitat_amount" "," "clumpiness"                 ;basic information
+                       "," "min_en" "," "discharge-rate" "," "mortality_rate_dispersal" "," "min_step_before_settle"                   ;input information
+                       "," "dist_max_per_day_mean" "," "dist_max_per_day_sd" "," "ac_index"                                             ;input information
+                       "," "turtle" "," "behaviour" "," "decision" "," "hab_quality_area" "," "linear_dist" "," "total_dist" "," "En"   ;information per turtle
       )
       file-close]
   reset-ticks
@@ -281,109 +270,26 @@ to go
   ]
 
   ; Generate outputs
-  if count turtles with [status = "dis"] = 0
-  [ store-turtles-location-final-per-behavior
-    set decision_list list "H" "En"
-    set v 0
-    foreach all_e_C [ ;FOR EACH GROUP OF BEHAVIOUR, CALCULATE OUTPUTS AND SAVE
-        x ->
-        set group1 turtles with [e_C = x]
-        set mortality precision ((each_group - count group1) / each_group) 2
-        ;set final_occupancy item v c_occupancy
-        ;set v (v + 1)
-      foreach decision_list[
-        y ->
-        set group group1 with [decision = y]
-        define-output-variables
-        file-open "output.txt"
-        file-print (word p
-                        "," Specie "," perceptual_range "," num_lands "," forest "," clumpiness        ;Basic variables
-                        "," min_en                                                                     ;minimum energy required
-                        "," x                                                                          ;expoent of decreasing habitat quality requirement with energy
-                        "," y                                                                          ;decision
-                        "," total_set_T                                                                ;total settlers in total
-                        "," mean_linear_dist_T                                                         ;mean linear distance in total
-                        "," mean_dist_T                                                                ;mean distance realized in total
-                        "," mean_H'_T                                                                   ;mean habitat quality of settlement patch in total
-                        "," mortality                                                                  ;mortality rate
-                        ;"," final_occupancy
-                        "," discharge-rate                                           ;recharge and discharge rate
-                        "," mortality_rate_dispersal                                                   ;mortality rate in dispersal
-                        "," mean_En_end_T                                                              ;mean energetic condition in the end in total
-                        "," mean_time_set_T                                                            ;mean time to settle in total
-        )
-        file-close
-    ]]
+  if count turtles with [status = "dis"] = 0 [
+    ;define run number
+    r:eval "x <- read.table(file = '~/Documents/phd_project/Chapter_2/output/output.txt' ,sep = ',',header = T)"
+    r:eval "y <- max(unique(x$run))"
+    set p r:get "y"
+    ifelse p < 0 [set p 0]
+    [set p p + 1]
+    ask turtles
+    [ set linear_dist ((distance initial_patch) * resolution)
+      file-open "output.txt"
+      file-print (word p
+                       "," Specie "," perceptual_range "," num_lands "," forest "," clumpiness                  ;basic information
+                       "," min_en "," discharge-rate "," mortality_rate_dispersal "," min_step_before_settle   ;input information
+                       "," dmean "," dsd "," ac                                                                 ;input information
+                       "," who "," e_C "," decision "," H' "," linear_dist "," total_dist "," En                ;information per turtle
+      )
+      file-close
+    ]
     show (word "Execution finished in "timer" seconds")
     stop]
-end
-
-
-to define-output-variables
-  ifelse count group = 0
-  [set total_set_T 0
-    set mean_H'_T 0
-    set mean_dist_T 0
-    set mean_linear_dist_T 0
-    set mean_En_end_T 0
-    set mean_time_set_T 0
-  ]
-  [
-  ; TOTAL SETTLERS
-  set total_set_T count group with [status = "set"]    ;total settlers
-
-  ;------- Mean Habitat Quality of Settlement Area
-  let H'-list_T [H'] of group with [status = "set"]
-  set mean_H'_T precision (mean H'-list_T) 2
-
-  ;------- Mean Distance Realized by Settlers
-  let dist-list_T [total_dist] of group with [status = "set"]
-  set mean_dist_T precision (mean dist-list_T) 2
-
-  ;------- Mean Linear Distance
-  ask turtles [set linear_dist ((distance initial_patch) * resolution)]
-
-  let l_dist-list_T [linear_dist] of group with [status = "set"]
-  set mean_linear_dist_T precision (mean l_dist-list_T) 2
-
-   ;------- Mean Energy Condition in the end
-  let list_En_end_T [En] of group with [status = "set"]
-  set mean_En_end_T precision (mean list_En_end_T) 2
-
-  ;------- Mean Time to Settle
-  let list_time_set_T [time_set] of group with [status = "set"]
-  set mean_time_set_T precision (mean list_time_set_T) 2
-  ]
-end
-
-to store-turtles-location-initial-per-behavior
-foreach all_e_C[
-  x ->
-  set distribution nobody
-  ask habitat [ifelse count turtles-here with [e_C = x] > 0 [set location x][set location -1]]
-  ask matrix [set location "NA"]
-  ask one-of patches [set distribution gis:patch-dataset location]
-  set p 0
-  set file_dist word "distribution_" x
-  while [file-exists? (word p file_dist "_" "i" ".asc")]
-  [set p (p + 1)]
-  gis:store-dataset distribution (word p file_dist "_" "i" ".asc" )
-  ]
-end
-
-to store-turtles-location-final-per-behavior
-foreach all_e_C[
-  x ->
-  set distribution nobody
-  ask habitat [ifelse count turtles-here with [e_C = x] > 0 [set location x][set location -1]]
-  ask matrix [set location "NA"]
-  ask one-of patches [set distribution gis:patch-dataset location]
-  ;set p 0
-  set file_dist word "distribution_" x
-  ;while [file-exists? (word p file_dist "_" "i" ".asc")]
-  ;[set p (p + 1)]
-  gis:store-dataset distribution (word p file_dist "_" "f" ".asc" )
-  ]
 end
 
 
@@ -453,6 +359,7 @@ to disperse
 end
 
 to decide_settle
+  ;if any? turtles-on patch-here [move-to one-of neighbors with [cover = 1 and count(turtles-here) = 0]] ;avoid two turtles in the same patch
   if H' >= C or En < min_En [                                ; Settlement Choice: if habitat quality is higher then requirement, or if energy is too low to keep dispersing.
   set patch-q H'                                             ; register the habitat quality of the settlement area
   set status "set"                                           ; define status as settler
@@ -460,24 +367,6 @@ to decide_settle
   set time_set t                                             ; register time to settlement
   stop
   ]
-
-  ;let area patches in-radius PR
-  ;if max [Q] of area >= C [
-  ;  move-to max-one-of area [Q]
-  ;  ;set patch-q H' mudar isso, e armazenar o valor do pixel e não da area toda.
-  ;  set status "set"
-  ;  set decision "H"
-  ;  set time_set t
-  ;  stop
-  ;]
-
-  ;if En < min_En [
-  ;  ;set patch-q H' mudar isso, e armazenar o valor do pixel e não da area toda.
-  ;  set status "set"
-  ;  set decision "En"
-  ;  set time_set t
-  ;  stop
-  ;]
 end
 
 to discharge ; implement discharge different in habitat and in matrix.
@@ -497,7 +386,7 @@ to imp_def_PATCHES_ONLY ;----------------------------------LANDSCAPE WITH ONLY P
   ;------------------------------------------------------Import landscape
   let directory word landscape_directory "exported_ascii_MS_HABMAT_PATCHES_ONLY/" ;define directory
   let direct_list sort pathdir:list directory ;list of files in directory in order
-  let landscape item num_lands direct_list ;get one of the landscape from the list based on num-lands and define as landscape
+  set landscape item num_lands direct_list ;get one of the landscape from the list based on num-lands and define as landscape
   let dir_landscape word directory landscape ;set the new_landscape with the directory to import
   ;------------------------------------------------------Define landscape
   let landscape-dataset gis:load-dataset dir_landscape
@@ -556,7 +445,7 @@ to create_hab_quality_surface ;Atkins et al. 2019 - previous
 end
 
 to assign
- ifelse random-float 1.1 < ac
+ ifelse random-float 1 < ac
   [let model habitat with [Q != 0 and count neighbors with [cover = 1 and Q = 0] > 0]
     if any? model [
       ask one-of model [
@@ -578,7 +467,7 @@ to import_Q
   let direct_list_Q sort pathdir:list directory_Q ;list of files in directory in order
   let surface item num_lands direct_list_Q ;get one of the landscape from the list based on num-lands and define as landscape
   let dir_landscape_Q word directory_Q surface ;set the new_landscape with the directory to import
-  show direct_list_Q
+  ;show direct_list_Q
   ;------------------------------------------------------Define landscape
   let Q-dataset gis:load-dataset dir_landscape_Q
   gis:set-world-envelope-ds gis:envelope-of Q-dataset ;define the world size similar to the landscape imported
@@ -696,15 +585,53 @@ to save_paths
   file-close
   ]
 end
+
+to export-GIS
+  let patches_out nobody
+  ask one-of patches [set patches_out gis:patch-dataset Q]
+  gis:store-dataset patches_out (word landscape "_ac_" ac "_quality" ".asc")
+end
+
+
+;revisar
+to store-turtles-location-initial-per-behavior
+foreach all_e_C[
+  x ->
+  set distribution nobody
+  ask habitat [ifelse count turtles-here with [e_C = x] > 0 [set location x][set location -1]]
+  ask matrix [set location "NA"]
+  ask one-of patches [set distribution gis:patch-dataset location]
+  ;set p 0
+  set file_dist word "distribution_" x
+  ;while [file-exists? (word p file_dist "_" "i" ".asc")]
+  ;[set p (p + 1)]
+  gis:store-dataset distribution (word p file_dist "_" "i" ".asc" )
+  ]
+end
+
+to store-turtles-location-final-per-behavior
+foreach all_e_C[
+  x ->
+  set distribution nobody
+  ask habitat [ifelse count turtles-here with [e_C = x] > 0 [set location x][set location -1]]
+  ask matrix [set location "NA"]
+  ask one-of patches [set distribution gis:patch-dataset location]
+  ;set p 0
+  set file_dist word "distribution_" x
+  ;while [file-exists? (word p file_dist "_" "i" ".asc")]
+  ;[set p (p + 1)]
+  gis:store-dataset distribution (word p file_dist "_" "f" ".asc" )
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 551
 146
-1121
-717
+1072
+668
 -1
 -1
-2.8
+1.0
 1
 10
 1
@@ -714,10 +641,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--100
-100
--100
-100
+-256
+256
+-256
+256
 1
 1
 1
@@ -741,7 +668,7 @@ INPUTBOX
 220
 70
 num_lands
-1.0
+12.0
 1
 0
 Number
@@ -810,7 +737,7 @@ individuals
 individuals
 0
 1000
-200.0
+1000.0
 100
 1
 NIL
@@ -1102,7 +1029,7 @@ SWITCH
 504
 occupancy_output
 occupancy_output
-0
+1
 1
 -1000
 
@@ -1113,7 +1040,7 @@ SWITCH
 619
 path_outputs
 path_outputs
-0
+1
 1
 -1000
 
@@ -1321,7 +1248,7 @@ INPUTBOX
 191
 684
 N_path
-5.0
+2.0
 1
 0
 Number
@@ -1412,8 +1339,8 @@ MONITOR
 612
 1725
 657
-Mortality by Predation
-mort_pred
+Decision by Quality
+count turtles with [decision = \"H\"]
 1
 1
 11
@@ -1423,8 +1350,8 @@ MONITOR
 612
 1896
 657
-Mortality by Starvation
-mort_ener
+Decision by Energy
+count turtles with [decision = \"En\"]
 1
 1
 11
@@ -1473,7 +1400,7 @@ INPUTBOX
 436
 331
 hab_quality_folder
-hab_quality/teste/
+hab_quality/256/
 1
 0
 String
@@ -1894,6 +1821,77 @@ NetLogo 6.2.2
     <enumeratedValueSet variable="path_outputs">
       <value value="false"/>
     </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <enumeratedValueSet variable="min_step_before_settle">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="dsd">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mortality_rate_dispersal">
+      <value value="0.01"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="movement_parameters_output">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="perceptual_range">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="interval">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="dmean">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="N_path">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ends">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="individuals">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path_outputs">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="data_directory">
+      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/data&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="discharge-rate">
+      <value value="0.01"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="output_directory">
+      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/output&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="import_hab_quality_surface">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="landscape_directory">
+      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ac">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hab_quality_folder">
+      <value value="&quot;hab_quality/256/&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min_en">
+      <value value="0.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Specie">
+      <value value="&quot;DA&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="occupancy_output">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="num_lands" first="0" step="1" last="63"/>
   </experiment>
 </experiments>
 @#$#@#$#@
