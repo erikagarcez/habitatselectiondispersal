@@ -137,7 +137,7 @@ to setup
   ;set-patch-size 0.7
   resize-world -256 256 -256 256           ; Define small landscape just for testing
   set-patch-size 1
-  ;resize-world -100 100 -100 100
+  ;resize-world -50 50 -50 50
   ;set-patch-size 2.8
   set resolution 10                        ; Each pixel/cell is 10m
 
@@ -234,7 +234,7 @@ to setup
       )
       file-close]
   reset-ticks
-  show (word "Setup timer:" timer)
+  show (word "Run number " p ":" " setup timer was " timer " seconds")
 end
 
 to go
@@ -288,7 +288,7 @@ to go
       )
       file-close
     ]
-    show (word "Execution finished in "timer" seconds")
+    show (word "Run number " p ":" " finished in "timer" seconds")
     stop]
 end
 
@@ -433,11 +433,11 @@ to create_hab_quality_surface ;Atkins et al. 2019 - previous
   ;ask habitat[set pcolor scale-color green Q 0 1]
   ;ask matrix[set Q 0 set pcolor brown]
 
-  ;let j remove-duplicates [patches_ID] of habitat
-  ;foreach j [
-  ;  x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
-  ;]
-  ask one-of habitat [set Q 0.5 + random-float 0.4]
+  let j remove-duplicates [patches_ID] of habitat
+  foreach j [
+    x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
+  ]
+  ;ask one-of habitat [set Q 0.5 + random-float 0.4]
   ;repeat (count habitat - length remove-duplicates [patches_ID] of habitat)[ask one-of habitat [assign]]
   ask habitat [assign]
   ask habitat[set pcolor scale-color green Q 0.5 1]
@@ -445,7 +445,7 @@ to create_hab_quality_surface ;Atkins et al. 2019 - previous
 end
 
 to assign
- ifelse random-float 1 < ac
+ ifelse random-float 1.1 < ac
   [let model habitat with [Q != 0 and count neighbors with [cover = 1 and Q = 0] > 0]
     if any? model [
       ask one-of model [
@@ -668,7 +668,7 @@ INPUTBOX
 220
 70
 num_lands
-12.0
+0.0
 1
 0
 Number
@@ -933,7 +933,7 @@ INPUTBOX
 327
 395
 ac
-0.5
+1.0
 1
 0
 Number
