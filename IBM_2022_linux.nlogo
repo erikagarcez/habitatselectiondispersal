@@ -234,7 +234,7 @@ to setup
       )
       file-close]
   reset-ticks
-  show (word "Run number " p ":" " setup timer was " timer " seconds")
+  ;show (word "Setup timer was " timer " seconds")
 end
 
 to go
@@ -627,11 +627,11 @@ end
 GRAPHICS-WINDOW
 551
 146
-1072
-668
+841
+437
 -1
 -1
-1.0
+2.8
 1
 10
 1
@@ -641,10 +641,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--256
-256
--256
-256
+-50
+50
+-50
+50
 1
 1
 1
@@ -1380,7 +1380,7 @@ SWITCH
 265
 import_hab_quality_surface
 import_hab_quality_surface
-0
+1
 1
 -1000
 
