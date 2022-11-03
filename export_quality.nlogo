@@ -5,7 +5,7 @@ Extensions [
 globals [
   directory ;directory of landscape files
   land_list ;list of landscape files in directory
-  land ;landscape at each step
+  landscape ;landscape at each step
   ;type of patches
   habitat
   matrix
@@ -23,12 +23,14 @@ to setup
   clear-all
   resize-world (- world-size) world-size (- world-size) world-size           ; Define landscape 1024x1024.
   ;set-patch-size 1.5
+  set-patch-size 2.8
 
   set directory landscape_directory ;define directory
   set land_list sort pathdir:list directory ;list of files in directory in order
   ;show land_list ;show list
   ;begin step and n
-  set step 0
+  ;set step 0
+  set step start
   set n 0
   reset-ticks
 end
@@ -38,8 +40,8 @@ to go
   print step
   set n n + 1
   ;Import landscape
-  set land step ;define the landscape - used for filename to output
-  let landscape item step land_list ;get landscape from list
+  ;set land step ;define the landscape - used for filename to output
+  set landscape item step land_list ;get landscape from list
   let landscapedir word "/" landscape ;add / to landscape name
   let dir_landscape word directory landscapedir ;set the new_landscape with the directory to import
   ;Define landscape
@@ -55,6 +57,7 @@ to go
   set-current-directory output_directory ; Define directory to save output
   export-GIS ;export asc files
   set step step + 1
+  if (step > ends) [stop]
   if n = length land_list
   [stop]
 end
@@ -87,17 +90,17 @@ end
 to export-GIS
   let patches_out nobody
   ask one-of patches [set patches_out gis:patch-dataset Q]
-  gis:store-dataset patches_out (word "land_" step "_ac_" ac "_quality" ".asc")
+  gis:store-dataset patches_out (word landscape "_ac_" ac "_quality" ".asc")
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 383
 10
-874
-502
+673
+301
 -1
 -1
-4.7822
+2.8
 1
 10
 1
@@ -138,7 +141,7 @@ INPUTBOX
 22
 145
 321
-205
+243
 output_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/hab_quality
 1
@@ -163,7 +166,7 @@ BUTTON
 57
 Go
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -175,9 +178,9 @@ NIL
 
 INPUTBOX
 21
-210
+248
 320
-288
+346
 landscape_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/exported_ascii_MS_HABMAT_PATCHES_ONLY
 1
@@ -191,6 +194,28 @@ INPUTBOX
 126
 world-size
 50.0
+1
+0
+Number
+
+INPUTBOX
+22
+356
+100
+416
+start
+0.0
+1
+0
+Number
+
+INPUTBOX
+106
+357
+183
+417
+ends
+5.0
 1
 0
 Number
@@ -555,14 +580,21 @@ NetLogo 6.2.2
       <value value="0.5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="world-size">
-      <value value="512"/>
+      <value value="256"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="start">
+      <value value="93"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ends">
+      <value value="94"/>
     </enumeratedValueSet>
   </experiment>
   <experiment name="experiment_t" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
+    <timeLimit steps="10"/>
     <enumeratedValueSet variable="output_directory">
-      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/hab_quality&quot;"/>
+      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/hab_quality/teste100&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="landscape_directory">
       <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/exported_ascii_MS_HABMAT_PATCHES_ONLY&quot;"/>
@@ -571,7 +603,7 @@ NetLogo 6.2.2
       <value value="0.5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="world-size">
-      <value value="50"/>
+      <value value="100"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
