@@ -234,7 +234,7 @@ to setup
       )
       file-close]
   reset-ticks
-  ;show (word "Setup timer was " timer " seconds")
+  show (word "Simulation landscape " num_lands " running...")
 end
 
 to go
@@ -288,7 +288,7 @@ to go
       )
       file-close
     ]
-    show (word "Run number " p ":" " finished in "timer" seconds")
+    show (word "Run number " p ":" " landscape " num_lands " finished in "timer" seconds")
     stop]
 end
 
@@ -1891,7 +1891,7 @@ NetLogo 6.2.2
     <enumeratedValueSet variable="occupancy_output">
       <value value="false"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="num_lands" first="0" step="1" last="63"/>
+    <steppedValueSet variable="num_lands" first="64" step="1" last="99"/>
   </experiment>
 </experiments>
 @#$#@#$#@
