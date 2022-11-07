@@ -81,6 +81,7 @@ patches-own [
   Q                   ; Habitat quality of the patch
   ;patches-occupied
   location
+  ID
 ]
 turtles-own[
  e_C                  ; exponent of settlement behaviour - level of plasticity
@@ -155,7 +156,13 @@ to setup
 ;--------------------------------Define habitat quality in habitat patches
   ifelse import_hab_quality_surface = true
   [import_Q]
-  [create_hab_quality_surface]
+  [ifelse hab_quality_per_frag = true
+    [create_hab_quality_surface_per_frag]
+    [ifelse ac_simple = true
+      [create_hab_quality_surface_simple]
+      [create_hab_quality_surface]
+    ]
+  ]
 
   ; mortality counts
   set mort_pred 0
@@ -419,6 +426,28 @@ to imp_def_DIST_PATCHES ;-----------------------LANDSCAPE  WITH ONLY PATCHES - D
   gis:apply-raster landscape-DIST_PATCHES-dataset patches_DIST ;get values of the landscape to variable cover
 end
 
+to define_patches_ID
+  while [any? habitat with [ID = 0]][
+
+    ask one-of habitat with [ID = 0]
+    [set ID random 50
+      ask neighbors with [cover = 1 and ID = 0][set ID [ID] of myself]
+    ]
+
+    while [any? habitat with [ID = 0 and count neighbors with [cover = 1 and ID != 0] >= 1]]
+    [ask habitat with [ID = 0 and count neighbors with [cover = 1 and ID != 0] >= 1]
+      [set ID [ID] of one-of neighbors with [cover = 1 and ID != 0]
+        ask neighbors with [cover = 1 and ID = 0][set ID [ID] of myself]]
+    ]
+  ]
+  if count habitat with [ID = 0] = 0
+  [show "done"]
+
+  ;let minID min [ID] of habitat
+  ;let maxID max [ID] of habitat
+  ;ask habitat[set pcolor scale-color blue ID minID maxID]
+end
+
 to landscape_parameters ;import landscape parameter for each landscape - habitat amount and clumpiness
   let imp_land_par (csv:from-file word data_directory "/landscape_parameters.csv")
   let land_values item (num_lands + 1) imp_land_par
@@ -426,19 +455,11 @@ to landscape_parameters ;import landscape parameter for each landscape - habitat
   set clumpiness item 2 land_values
 end
 
-to create_hab_quality_surface ;Atkins et al. 2019 - previous
-  ;ask habitat[set Q 0.5
-  ;            set Q Q + random-float 0.5] ;;set quality values for habitat patches
-  ;ask habitat[set Q Q + random-float ns - (2 * ns)] ;;add noise to landscape by randomly increasing or decreasing patch quality in habitat
-  ;ask habitat[set pcolor scale-color green Q 0 1]
-  ;ask matrix[set Q 0 set pcolor brown]
-
+to create_hab_quality_surface
   let j remove-duplicates [patches_ID] of habitat
   foreach j [
     x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
   ]
-  ;ask one-of habitat [set Q 0.5 + random-float 0.4]
-  ;repeat (count habitat - length remove-duplicates [patches_ID] of habitat)[ask one-of habitat [assign]]
   ask habitat [assign]
   ask habitat[set pcolor scale-color green Q 0.5 1]
   ask matrix[set Q 0 set pcolor brown]
@@ -461,13 +482,25 @@ to assign
   ]
 end
 
+to create_hab_quality_surface_per_frag
+  let j remove-duplicates [patches_ID] of habitat
+  foreach j [
+    x -> let value 0.5 + random-float 0.4
+    ask habitat with [patches_ID = x][set Q value]
+  ]
+  let minq min [Q] of habitat
+  let maxq max [Q] of habitat
+  ask habitat[set pcolor scale-color green Q minq maxq]
+  ask matrix[set Q 0 set pcolor brown]
+end
+
 to import_Q
    ;------------------------------------------------------Import landscape
   let directory_Q word landscape_directory hab_quality_folder;define directory
   let direct_list_Q sort pathdir:list directory_Q ;list of files in directory in order
   let surface item num_lands direct_list_Q ;get one of the landscape from the list based on num-lands and define as landscape
   let dir_landscape_Q word directory_Q surface ;set the new_landscape with the directory to import
-  ;show direct_list_Q
+  show direct_list_Q
   ;------------------------------------------------------Define landscape
   let Q-dataset gis:load-dataset dir_landscape_Q
   gis:set-world-envelope-ds gis:envelope-of Q-dataset ;define the world size similar to the landscape imported
@@ -475,6 +508,39 @@ to import_Q
   ask habitat[set pcolor scale-color green Q 0.5 1]
   ask matrix[set Q 0 set pcolor brown]
 end
+
+to create_hab_quality_surface_simple
+  let list-ac table:make
+  table:put list-ac 1 8
+  table:put list-ac 2 7
+  table:put list-ac 3 6
+  table:put list-ac 4 5
+  table:put list-ac 5 4
+  table:put list-ac 6 3
+  table:put list-ac 7 2
+  table:put list-ac 8 1
+
+  while [any? habitat with [Q = 0]][
+
+    ask one-of habitat with [Q = 0]
+    [set Q 0.5 + random-float 0.4
+      ask neighbors with [cover = 1 and Q = 0][set Q [Q] of myself]
+    ]
+
+    while [any? habitat with [Q = 0 and count neighbors with [cover = 1 and Q != 0] >= table:get list-ac autocorrelation]]
+    [ask habitat with [Q = 0 and count neighbors with [cover = 1 and Q != 0] >= table:get list-ac autocorrelation]
+      [set Q [Q] of one-of neighbors with [cover = 1 and Q != 0]
+        ask neighbors with [cover = 1 and Q = 0][set Q [Q] of myself]]
+    ]
+  ]
+  let minq min [Q] of habitat
+  let maxq max [Q] of habitat
+  ask habitat[set pcolor scale-color green Q minq maxq]
+  ask matrix[set Q 0 set pcolor brown]
+
+end
+
+
 
 ; CREATE AGENTS
 
@@ -626,12 +692,12 @@ end
 @#$#@#$#@
 GRAPHICS-WINDOW
 551
-146
-841
-437
+149
+1072
+671
 -1
 -1
-2.8
+1.0
 1
 10
 1
@@ -641,10 +707,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--50
-50
--50
-50
+-256
+256
+-256
+256
 1
 1
 1
@@ -668,7 +734,7 @@ INPUTBOX
 220
 70
 num_lands
-0.0
+23.0
 1
 0
 Number
@@ -928,21 +994,21 @@ Directories (landscapes, input data, and output)\n
 1
 
 INPUTBOX
-263
-335
-327
-395
+393
+451
+447
+511
 ac
-1.0
+0.0
 1
 0
 Number
 
 TEXTBOX
-334
-336
-439
-388
+451
+455
+556
+507
 Autocorrelation\n    of Habitat \n     Quality \n      (0-1)
 10
 0.0
@@ -1389,7 +1455,7 @@ TEXTBOX
 201
 501
 228
-Choose to import a .asc file with habitat quality information, or to generate based on ac
+Choose to import a .asc file with habitat quality information, or to generate 
 10
 0.0
 1
@@ -1412,6 +1478,63 @@ TEXTBOX
 195
 Habitat Quality Surface
 12
+0.0
+1
+
+SWITCH
+266
+368
+471
+401
+hab_quality_per_frag
+hab_quality_per_frag
+1
+1
+-1000
+
+TEXTBOX
+262
+336
+512
+378
+Generating habitat quality surface, per fragment based on patches_ID layer
+10
+0.0
+1
+
+SLIDER
+256
+483
+388
+516
+autocorrelation
+autocorrelation
+1
+8
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+258
+447
+385
+480
+ac_simple
+ac_simple
+0
+1
+-1000
+
+TEXTBOX
+267
+411
+486
+444
+Generating habitat quality surface based on spatial autocorrelation simple or complex
+10
 0.0
 1
 
