@@ -36,8 +36,8 @@ to setup
 end
 
 to go
-  tick
   print step
+  tick
   set n n + 1
   ;Import landscape
   ;set land step ;define the landscape - used for filename to output
