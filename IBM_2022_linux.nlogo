@@ -1,5 +1,5 @@
 Extensions [
-  gis   pathdir  csv  profiler table r
+  gis   pathdir  csv  profiler table r palette
 ]
 globals[ ;varibles used by all agents
   p                   ;run number
@@ -49,7 +49,7 @@ patches-own [
   patches_DIST        ; distance (m) of each cell in the matrix from the patch
   Q                   ; Habitat quality of the patch
   location            ; Storage distribution
-  ID                  ; ID calculated
+  ;ID                  ; ID calculated
 ]
 turtles-own[
  e_C                  ; exponent of settlement behaviour - level of plasticity
@@ -61,6 +61,7 @@ turtles-own[
  En                   ; energetic individual condition - range 0-1 (maximum)
  patch-q              ; habitat quality of the area within PR where each turtles settled
  initial_id           ; ID of initial patch before dispersal
+ final_id
  list_previous_id     ; list of ID of fragments visited
  decision             ; if decision of settle was based on habitat quality or energy
  time_set             ; time to settle
@@ -106,11 +107,9 @@ to setup
 ;---------------------------------------------------------------------------------------------------
 ;--------------------------------------CREATE ENVIRONMENT-------------------------------------------
 ;---------------------------------------------------------------------------------------------------
-  resize-world -256 256 -256 256           ; Define small landscape just for testing
-  set-patch-size 1.8
-  ;resize-world -100 100 -100 100
-  ;set-patch-size 2.8
-  set resolution 10                        ; Each pixel/cell is 10m
+  resize-world (world-size - (world-size * 2)) world-size (world-size - (world-size * 2)) world-size
+  set-patch-size patch-sizes
+  set resolution patch-resolution                   ; Each pixel/cell is 10m
 
 ;--------------------------------Import and define landscape from directory
   imp_def_PATCHES_ONLY
@@ -123,8 +122,8 @@ to setup
   set edge habitat with [count neighbors4 with [cover = 1] < 4]
 
 ;--------------------------------Calculate new ID - patches_ID in fragmented landscapes with high habitat amount usually becames one big fragment.
-  ask patches [set ID 0]
-  define_patches_ID
+  ;ask patches [set ID 0]
+  ;define_patches_ID
 
 ;--------------------------------Define habitat quality in habitat patches
   ifelse import_hab_quality_surface = true
@@ -136,6 +135,8 @@ to setup
       [create_hab_quality_surface]
     ]
   ]
+
+  color-patches
 
 ;---------------------------------------------------------------------------------------------------
 ;--------------------------------------CREATE AGENTS------------------------------------------------
@@ -151,7 +152,7 @@ to setup
 ;--------------------------------Define turtles variables
   ask turtles [
    ;pen-down
-   set size 4
+   set size 1.5
    set status "dis"
    set PR perceptual_range / resolution           ;100m represent 10 pixels, because each
    set H' mean [(Q)] of patches in-radius PR      ;Mean habitat quality within perceptual range
@@ -160,7 +161,7 @@ to setup
    set max_dist (random-normal dmean dsd) / resolution ;Maximum distance during dispersal per day  -- Need to get this data with Marquinhos!! **
    set En 1                                       ;Energy - Body conditions
    set min_En (random-normal En_mean En_sd)       ;Minimal energy to keep dispersing
-   set initial_id [ID] of patch-here              ;Id of initial patch
+   set initial_id [patches_ID] of patch-here      ;Id of initial patch
    set list_previous_id []                        ;start list of visited fragments
    set list_previous_id lput initial_id list_previous_id
    set initial_patch patch-here
@@ -184,25 +185,19 @@ to setup
 ;---------------------------------------------------------------------------------------------------
 ;------------------------------------- INITIAL OUTPUTS----------------------------------------------
 ;---------------------------------------------------------------------------------------------------
-  if occupancy_output = TRUE [
+   save_sim_parameters
+
+  if occupancy_output = TRUE [ ;CHECAR!
   if not file-exists? "occupancy.txt"
   [
     file-open "occupancy.txt"
-    file-print c_occupancy
+    file-print (word "run" "," "t" "," "occupancy")
+    file-print (word p "," t "," c_occupancy)
     file-close
   ]
   ]
 
-  if not file-exists? "output.txt"
-    [file-open "output.txt"
-      file-print (word "run"
-                       "," "specie" "," "perceptual_range" "," "landscape_number" "," "habitat_amount" "," "clumpiness"                 ;basic information
-                       "," "min_en" "," "discharge-rate" "," "mortality_habitat" "," "mortality_matrix" "," "min_step_before_settle"    ;input information
-                       "," "dist_max_per_day_mean" "," "dist_max_per_day_sd" "," "ac_index"                                             ;input information
-                       "," "turtle" "," "behaviour" "," "decision" "," "hab_quality_area" "," "linear_dist" "," "total_dist" "," "En"   ;information per turtle
-                       "," "occupancy"
-      )
-      file-close]
+  create_output
   reset-ticks
   show (word "Setup timer: " timer " seconds -> Simulation landscape " num_lands " running...")
 end
@@ -219,48 +214,31 @@ to go
   cell_occupancy
   if occupancy_output = TRUE [
     file-open "occupancy.txt"
-    file-print c_occupancy
+    file-print (word p "," t "," c_occupancy)
     file-close
     ]
 
   ask turtles [
-    if En <= 0 [set mort_ener mort_ener + 1
-      die]                                                ; Mortality by low energetic condition
-    update_variables
+    if status = "dis" [
 
-    ifelse t < min_step_before_settle
-    [ if status = "dis"[disperse]]
-    [ if status = "dis"[
-      if [cover] of patch-here = 1 and [ID] of patch-here != initial_id[
-        ;let my_id [patches_ID] of patch-here
-        ;if not member? my_id list_previous_id [set list_previous_id lput my_id list_previous_id]
-        decide_settle]
-      disperse
-      ]
+      update_variables
+      if En <= 0 [set mort_ener (mort_ener + 1) die] ; Mortality by low energetic condition
+
+      ifelse t < min_step_before_settle
+      [disperse]
+      [if [cover] of patch-here = 1 and [patches_ID] of patch-here != initial_id[decide_settle]
+        if status = "dis" [disperse]] ;if not settle, still dispersing.
     ]
   ]
 
   ; Generate outputs
   if count turtles with [status = "dis"] = 0 [
-    ;define run number
-    r:eval "x <- read.table(file = '~/Documents/phd_project/Chapter_2/output/output.txt' ,sep = ',',header = T)"
-    r:eval "y <- max(unique(x$run))"
-    set p r:get "y"
-    ifelse p < 0 [set p 0]
-    [set p p + 1]
-    store-turtles-location-final-per-behavior
     ask turtles
-    [ set linear_dist ((distance initial_patch) * resolution)
-      file-open "output.txt"
-      file-print (word p
-                       "," Specie "," perceptual_range "," num_lands "," forest "," clumpiness                  ;basic information
-                       "," min_en "," discharge-rate "," mortality_habitat "," mortality_matrix "," min_step_before_settle   ;input information
-                       "," dmean "," dsd "," ac                                                                 ;input information
-                       "," who "," e_C "," decision "," H' "," linear_dist "," total_dist "," En                ;information per turtle
-                       "," c_occupancy
-      )
-      file-close
+    [
+      generate_output
     ]
+    ask turtles [set size 5]
+    export-view (word "run_" p "_landscape_" num_lands "_view.png")
     show (word "Run number " p ":" " landscape " num_lands " finished in "timer" seconds")
     stop]
 end
@@ -273,11 +251,13 @@ end
 to update_variables
   set H' mean [(Q)] of patches in-radius PR                       ; Update H'- habitat quality
   set C (Ci * (En) ^ (e_C))                                       ; Update C of turtles
+ ; avoid only the two previous patches.
+ ; if length list_previous_ID >= 3 [set list_previous_id (list item 0 list_previous_id)]
 end
 
 to movement-matrix ; calculate l and ang
   set movement "matrix"
-  ifelse not any? patches in-radius PR with [cover = 1 and not member? ID [list_previous_ID] of myself]       ;if there is no habitat patch within PR
+  ifelse not any? patches in-radius PR with [cover = 1 and not member? patches_ID [list_previous_ID] of myself]       ;if there is no habitat patch within PR
     [set oriented? false
       let RAN random-float 1
       set l ((Xmax-no ^ (expo-no + 1) - Xmin-no ^ (expo-no + 1)) * RAN + Xmin-no ^ (expo-no + 1)) ^ (1 / (expo-no + 1))  ;define step lenght from non-oriented distribution
@@ -285,7 +265,7 @@ to movement-matrix ; calculate l and ang
       set ang (heading + turning_angle)                                                                                  ;define absolute angle
     ]
     [set oriented? true
-      let near-habitat-patch min-one-of patches in-radius PR with [cover = 1 and not member? ID [list_previous_ID] of myself] [distance myself]  ;define the near habitat patch which are not the same as the previous one
+      let near-habitat-patch min-one-of patches in-radius PR with [cover = 1 and not member? patches_ID [list_previous_ID] of myself] [distance myself]  ;define the near habitat patch which are not the same as the previous one
       face near-habitat-patch                                                                                            ;face the near habitat patch
       let RAN random-float 1
       set l ((Xmax-o ^ (expo-o + 1) - Xmin-o ^ (expo-o + 1)) * RAN + Xmin-o ^ (expo-o + 1)) ^ (1 / (expo-o + 1))         ;define step lenght from oriented distribution
@@ -308,8 +288,11 @@ to movement-habitat
   ; mortality
   if random-float 1 < (mortality_habitat / 10) [set death true]                      ;all dispersers faces mortality after moving
 
-  let my_id [ID] of patch-here
-  if not member? my_id list_previous_id [set list_previous_id lput my_id list_previous_id]
+  let my_id [patches_ID] of patch-here
+  if not member? my_id list_previous_id [
+    ifelse length list_previous_id > 1 [set list_previous_id replace-item 1 list_previous_id my_id]
+    [set list_previous_id lput my_id list_previous_id]
+  ]
   ;after movement, if individual is in a habitat patch, save patch id. Then, when it reaches the matrix, it avoids to return.
 end
 
@@ -340,9 +323,11 @@ to disperse
 end
 
 to decide_settle
-  if any? turtles-on patch-here [move-to one-of neighbors] ;avoid two turtles in the same patch
+  ;if any? turtles-on patch-here [move-to one-of neighbors] ;avoid two turtles in the same patch
   if H' >= C or En < min_En [                                ; Settlement Choice: if habitat quality is higher then requirement, or if energy is too low to keep dispersing.
   set patch-q H'                                             ; register the habitat quality of the settlement area
+  set linear_dist ((distance initial_patch) * resolution)    ; calculate euclidian distance
+  set final_id [patches_ID] of patch-here                    ; define ID of settlement patch
   set status "set"                                           ; define status as settler
   ifelse H' >= C [set decision "H"][set decision "En"]       ; register setller by energy or by hab quality
   set time_set t                                             ; register time to settlement
@@ -388,27 +373,21 @@ to imp_def_ID_PATCHES ;-----------------------LANDSCAPE WITH ONLY PATCHES - ID
   gis:apply-raster landscape-ID_PATCHES-dataset patches_ID ;get values of the landscape to variable cover
 end
 
-to define_patches_ID
-  while [any? habitat with [ID = 0]][
-
-    ask one-of habitat with [ID = 0]
-    [set ID random 50
-      ask neighbors with [cover = 1 and ID = 0][set ID [ID] of myself]
-    ]
-
-    while [any? habitat with [ID = 0 and count neighbors with [cover = 1 and ID != 0] >= 1]]
-    [ask habitat with [ID = 0 and count neighbors with [cover = 1 and ID != 0] >= 1]
-      [set ID [ID] of one-of neighbors with [cover = 1 and ID != 0]
-        ask neighbors with [cover = 1 and ID = 0][set ID [ID] of myself]]
-    ]
-  ]
- ; if count habitat with [ID = 0] = 0
- ; [show "done"]
-
-  let minID min [ID] of habitat
-  let maxID max [ID] of habitat
-  ask habitat[set pcolor scale-color blue ID minID maxID]
-end
+;to define_patches_ID
+;  while [any? habitat with [ID = 0]][
+;
+;    ask one-of habitat with [ID = 0]
+;    [set ID random 50
+;      ask neighbors with [cover = 1 and ID = 0][set ID [ID] of myself]
+;    ]
+;
+;    while [any? habitat with [ID = 0 and count neighbors with [cover = 1 and ID != 0] >= 1]]
+;    [ask habitat with [ID = 0 and count neighbors with [cover = 1 and ID != 0] >= 1]
+;      [set ID [ID] of one-of neighbors with [cover = 1 and ID != 0]
+;        ask neighbors with [cover = 1 and ID = 0][set ID [ID] of myself]]
+;    ]
+;  ]
+;end
 
 to landscape_parameters ;import landscape parameter for each landscape - habitat amount and clumpiness
   let imp_land_par (csv:from-file word data_directory "/landscape_parameters.csv")
@@ -416,6 +395,8 @@ to landscape_parameters ;import landscape parameter for each landscape - habitat
   set forest item 1 land_values
   set clumpiness item 2 land_values
 end
+
+; HABITAT QUALITY SURFACE
 
 to import_Q
    ;------------------------------------------------------Import landscape
@@ -428,8 +409,6 @@ to import_Q
   let Q-dataset gis:load-dataset dir_landscape_Q
   gis:set-world-envelope-ds gis:envelope-of Q-dataset ;define the world size similar to the landscape imported
   gis:apply-raster Q-dataset Q ;get values of the landscape to variable hab quality (Q)
-  ask habitat[set pcolor scale-color green Q 0.5 1]
-  ask matrix[set Q 0 set pcolor brown]
 end
 
 to create_hab_quality_surface_per_frag
@@ -438,10 +417,6 @@ to create_hab_quality_surface_per_frag
    x -> let value 0.5 + random-float 0.4
     ask habitat with [patches_ID = x][set Q value]
   ]
-  let minq min [Q] of habitat
-  let maxq max [Q] of habitat
-  ask habitat[set pcolor scale-color green Q minq maxq]
-  ask matrix[set Q 0 set pcolor brown]
 end
 
 to create_hab_quality_surface
@@ -450,8 +425,6 @@ to create_hab_quality_surface
     x -> ask one-of habitat with [patches_ID = x][set Q 0.5 + random-float 0.4]
   ]
   ask habitat [assign]
-  ask habitat[set pcolor scale-color green Q 0.5 1]
-  ask matrix[set Q 0 set pcolor brown]
 end
 
 to assign
@@ -495,11 +468,14 @@ to create_hab_quality_surface_simple
         ask neighbors with [cover = 1 and Q = 0][set Q [Q] of myself]]
     ]
   ]
+end
+
+to color-patches
   let minq min [Q] of habitat
   let maxq max [Q] of habitat
-  ask habitat[set pcolor scale-color green Q minq maxq]
+  ;ask habitat[set pcolor scale-color green Q minq maxq]
+  ask habitat[set pcolor palette:scale-scheme "Sequential" "Greens" 8 Q (minq) (maxq + 0.4)]
   ask matrix[set Q 0 set pcolor brown]
-
 end
 
 ; CREATE AGENTS
@@ -588,8 +564,12 @@ to cell_occupancy
 end
 
 to save_movement_parameters
+ if not file-exists? "output.txt"
+  [file-open "movement_parameters.txt"
+    file-print (word "run_number" "," "turtle" "," "t" "," "movement" "," "step_length" "," "turning_angle" "," "ang")
+    file-close]
   file-open "movement_parameters.txt"
-  file-print (word p "," movement "," l "," turning_angle "," ang)
+  file-print (word p "," who "," t "," movement "," l "," turning_angle "," ang)
   file-close
 end
 
@@ -598,6 +578,10 @@ to turtle_path_set
 end
 
 to save_paths
+   if not file-exists? "paths.txt"
+  [file-open "paths.txt"
+    file-print (word "run_number" "," "who" "," "t" "," "xcor" "," "ycor" "," "cover of patch-here")
+    file-close]
   ask turtle_path [
   file-open "paths.txt"
   file-print (word p "," who "," t "," new-xcor "," new-ycor "," [cover] of patch-here)
@@ -605,16 +589,65 @@ to save_paths
   ]
 end
 
-;revisar
-to store-turtles-location-final-per-behavior
-  set distribution nobody
-  ask habitat [ifelse count turtles-here > 0 [set location [e_C] of one-of turtles-here][set location -1]]
-  ask matrix [set location "NA"]
-  ask one-of patches [set distribution gis:patch-dataset location]
-  set w 0
-  while [file-exists? (word w "distribution_" "i" ".asc")]
-  [set w (w + 1)]
-  gis:store-dataset distribution (word w "distribution_" "i" ".asc" )
+to save_sim_parameters
+  ;define run number
+  ifelse not file-exists? "sim_parameters.txt"
+   [file-open "sim_parameters.txt"
+    file-print (word
+        "run_number" "," "world-size" "," "patch_resolution" ","                       ;Environment
+        "landscape_number" "," "hab_amount" "," "clumpiness" ","                       ;Landscape
+        "specie" "," "perceptual_range" "," "initial_individuals" ","                  ;Agents
+        "mortality_habitat" "," "mortality_matrix" "," "min_step_before_settle" ","    ;Movement
+        "dmean" "," "dsd" ","                                                          ;Distance max per day
+        "origin_site" "," "min_Ci" "," "var_Ci" "," "behaviours" ","                   ;Habitat requirements
+        "discharge-rate" "," "En_mean" "," "En_sd" ","                                 ;Energetics
+        "import_hab_quality_surface" "," "hab_quality_folder" ","                      ;Hab Quality Surface - import
+        "hab_quality_per_frag" "," "ac_simple" "," "autocorrelation" "," "ac" ","      ;Hab Quality Surface - generators - by frag, by autocorrelation per frag, or total autocorrelation.
+      )
+    file-close
+   ]
+  [
+    let file word output_directory "/sim_parameters.txt"
+    r:put "file" file
+    r:eval "x <- read.table(file = file ,sep = ',',header = T)"
+    r:eval "y <- max(unique(x$run_number))"
+    set p r:get "y"
+    ifelse p < 0 [set p 0]
+    [set p p + 1]
+  ]
+  ;storage parameters in temp file.
+  file-open "sim_parameters.txt"
+  file-print (word
+        p "," world-size "," patch-resolution ","                                      ;Environment
+        num_lands "," forest "," clumpiness ","                                        ;Landscape
+        Specie "," perceptual_range "," individuals ","                                ;Agents
+        mortality_habitat "," mortality_matrix "," min_step_before_settle ","          ;Movement
+        dmean "," dsd ","                                                              ;Distance max per day
+        origin_site "," min_Ci "," var_Ci "," all_e_C ","                              ;Habitat requirements
+        discharge-rate "," En_mean "," En_sd ","                                       ;Energetics
+        import_hab_quality_surface "," hab_quality_folder ","                          ;Hab Quality Surface - import
+        hab_quality_per_frag "," ac_simple "," autocorrelation "," ac ","              ;Hab Quality Surface - generators - by frag, by autocorrelation per frag, or total autocorrelation.
+      )
+  file-close
+end
+
+to create_output
+  if not file-exists? "output.txt"
+    [file-open "output.txt"
+       file-print (word "run_number"
+        "," "turtle"  "," "initial_id_patch" "," "initial_patch" "," "min_En" "," "max_dist_per_day" "," "initial_Ci" "," "behaviour" ","                  ;initial information per turtle
+        "xcor" "," "ycor" "," "status" "," "final_C" "," "final_En" "," "Hab_quality_area" "," "patch-q" "," "decision" "," "linear_dist" "," "total_dist" ;results per turtle
+   )
+      file-close]
+end
+
+to generate_output ;per individuo
+  file-open "output.txt"
+  file-print (word p
+        "," who  "," initial_id "," initial_patch "," min_En "," max_dist "," Ci "," e_C ","                     ;initial information per turtle
+        xcor "," ycor "," status "," C "," En "," H' "," patch-q "," decision "," linear_dist "," total_dist     ;results per turtle
+   )
+  file-close
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -645,10 +678,10 @@ ticks
 30.0
 
 INPUTBOX
-26
-794
-441
-870
+35
+896
+450
+972
 landscape_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/
 1
@@ -656,32 +689,32 @@ landscape_directory
 String
 
 INPUTBOX
-131
-10
-220
-70
+140
+112
+229
+172
 num_lands
-23.0
+1.0
 1
 0
 Number
 
 INPUTBOX
-26
-950
-440
-1010
+35
+1052
+449
+1132
 output_directory
-/home/kekuntu/Documents/phd_project/Chapter_2/output
+/home/kekuntu/Documents/phd_project/Chapter_2/output/out_import_Q
 1
 0
 String
 
 BUTTON
-292
-14
-362
-69
+301
+116
+371
+171
 Setup
 setup
 NIL
@@ -695,10 +728,10 @@ NIL
 1
 
 BUTTON
-366
-14
-432
-69
+375
+116
+441
+171
 Go
 go
 T
@@ -712,45 +745,45 @@ NIL
 1
 
 TEXTBOX
-225
-12
-283
-74
+234
+114
+292
+176
 Landscape ID from database (0 to 99)
 10
 0.0
 1
 
 SLIDER
-240
-124
-436
-157
+249
+226
+445
+259
 individuals
 individuals
 0
 2000
-2000.0
+20.0
 5
 1
 NIL
 HORIZONTAL
 
 CHOOSER
-26
-18
-118
-63
+35
+120
+127
+165
 Specie
 Specie
 "DA" "PQ" "MP"
 0
 
 SLIDER
-240
-165
-436
-198
+249
+267
+445
+300
 perceptual_range
 perceptual_range
 0
@@ -780,10 +813,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "if t > 1 [plot count turtles]"
 
 SLIDER
-25
-86
-222
-119
+34
+188
+231
+221
 mortality_habitat
 mortality_habitat
 0
@@ -814,10 +847,10 @@ PENS
 "Energy" 1.0 0 -14454117 true "" "if t > 1 [plot count turtles with [decision = \"En\"]]"
 
 INPUTBOX
-26
-879
-441
-939
+35
+981
+450
+1041
 data_directory
 /home/kekuntu/Documents/phd_project/Chapter_2/data
 1
@@ -825,10 +858,10 @@ data_directory
 String
 
 INPUTBOX
-27
-495
-178
-557
+36
+597
+187
+659
 discharge-rate
 0.01
 1
@@ -858,10 +891,10 @@ PENS
 "2.0" 1.0 0 -2064490 true "" "if t > 1 and turtles with [status = \"dis\"] != 0 [plot mean [(C)] of turtles with [status = \"dis\" and e_C = 2.0]]"
 
 INPUTBOX
-26
-409
-85
-469
+35
+511
+94
+571
 initial
 0.0
 1
@@ -869,40 +902,40 @@ initial
 Number
 
 TEXTBOX
-28
-473
-178
-491
+37
+575
+187
+593
 Energetic dynamics
 12
 0.0
 1
 
 TEXTBOX
-25
-385
-223
-415
+34
+487
+232
+517
 Habitat Selection Behaviors
 12
 0.0
 1
 
 TEXTBOX
-31
-770
-381
-788
+40
+872
+390
+890
 Directories (landscapes, input data, and output)\n
 12
 0.0
 1
 
 INPUTBOX
-361
-527
-415
-587
+393
+661
+447
+721
 ac
 0.0
 1
@@ -910,20 +943,20 @@ ac
 Number
 
 TEXTBOX
-357
-595
-462
-647
-Autocorrelation\n    of Habitat \n     Quality \n      (0-1)
+260
+681
+427
+708
+Complex: Autocorrelation\n of Habitat Quality (0-1)
 10
 0.0
 1
 
 INPUTBOX
-88
-409
-142
-469
+97
+511
+151
+571
 interval
 0.5
 1
@@ -931,10 +964,10 @@ interval
 Number
 
 INPUTBOX
-145
-409
-201
-469
+154
+511
+210
+571
 ends
 2.0
 1
@@ -983,32 +1016,32 @@ PENS
 "Energy" 1.0 0 -14070903 true "" "if (count turtles with [decision = \"En\"] != 0) [plot mean [H'] of turtles with [decision = \"En\"]]"
 
 SWITCH
-29
-704
-281
-737
+38
+806
+290
+839
 movement_parameters_output
 movement_parameters_output
-1
+0
 1
 -1000
 
 SWITCH
-28
-666
-217
-699
+37
+768
+226
+801
 occupancy_output
 occupancy_output
-1
+0
 1
 -1000
 
 SWITCH
-222
-666
-376
-699
+231
+768
+385
+801
 path_outputs
 path_outputs
 1
@@ -1052,10 +1085,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [max_dist] of turtles"
 
 INPUTBOX
-26
-185
-99
-245
+35
+287
+108
+347
 dmean
 1000.0
 1
@@ -1063,10 +1096,10 @@ dmean
 Number
 
 INPUTBOX
-100
-185
-168
-245
+109
+287
+177
+347
 dsd
 100.0
 1
@@ -1204,20 +1237,20 @@ PENS
 "default" 1.0 0 -11221820 true "" "histogram [H'] of turtles with [status = \"set\" and e_C = 1.5]"
 
 TEXTBOX
-26
-166
-231
-196
+35
+268
+240
+298
 Distance Maxima Per Day
 12
 0.0
 1
 
 INPUTBOX
-380
-666
-448
-726
+389
+768
+457
+828
 N_path
 5.0
 1
@@ -1225,40 +1258,40 @@ N_path
 Number
 
 TEXTBOX
-290
-703
-369
-751
+299
+805
+378
+853
 Save complete trajectories of N random turtles
 10
 0.0
 1
 
 TEXTBOX
-31
-639
-240
-669
+40
+741
+249
+771
 Outputs
 14
 0.0
 1
 
 TEXTBOX
-29
-737
-281
-797
+38
+839
+290
+899
 Save step lenght and turning angle of all individuals in Matrix and Habitat
 10
 0.0
 1
 
 BUTTON
-1532
-652
-1896
-687
+1520
+784
+1884
+819
 show mean habitat quality in settlement per behaviour
 let mean-Q table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [Q] of turtles with [e_C = x]\n    table:put mean-Q x m\n  ]\nshow mean-Q
 NIL
@@ -1272,10 +1305,10 @@ NIL
 1
 
 BUTTON
-1570
-691
-1867
-724
+1558
+823
+1855
+856
 show mean linear distance per behaviour
 let mean-ld table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [linear_dist] of turtles with [e_C = x]\n    table:put mean-ld x m\n  ]\nshow mean-ld
 NIL
@@ -1289,10 +1322,10 @@ NIL
 1
 
 BUTTON
-1583
-728
-1855
-761
+1571
+860
+1843
+893
 show mean total distance per behaviour
 let mean-td table:make ;empty table\nforeach all_e_C[\n    x -> \n    let m mean [total_dist] of turtles with [e_C = x]\n    table:put mean-td x m\n  ]\nshow mean-td
 NIL
@@ -1306,10 +1339,10 @@ NIL
 1
 
 MONITOR
-1561
-783
-1716
-828
+1549
+915
+1704
+960
 Decision by Quality
 count turtles with [decision = \"H\"]
 1
@@ -1317,10 +1350,10 @@ count turtles with [decision = \"H\"]
 11
 
 MONITOR
-1722
-783
-1881
-828
+1710
+915
+1869
+960
 Decision by Energy
 count turtles with [decision = \"En\"]
 1
@@ -1328,10 +1361,10 @@ count turtles with [decision = \"En\"]
 11
 
 BUTTON
-321
-80
-403
-113
+330
+182
+412
+215
 profiler
 profiler:start         ;; start profiling\nsetup                  ;; set up the model\nrepeat 5 [ go ]       ;; run something you want to measure\nprofiler:stop          ;; stop profiling\nprint profiler:report  ;; view the results\nprofiler:reset         ;; clear the data\n
 NIL
@@ -1345,31 +1378,31 @@ NIL
 1
 
 SWITCH
-230
-308
-455
-341
+239
+410
+464
+443
 import_hab_quality_surface
 import_hab_quality_surface
-1
+0
 1
 -1000
 
 TEXTBOX
-235
-277
-469
-304
+244
+379
+478
+406
 Choose to import a .asc file with habitat quality information, or to generate 
 10
 0.0
 1
 
 INPUTBOX
-230
-347
-404
-407
+239
+449
+413
+509
 hab_quality_folder
 hab_quality/256/
 1
@@ -1377,20 +1410,20 @@ hab_quality/256/
 String
 
 TEXTBOX
-274
-253
-424
-271
+283
+355
+433
+373
 Habitat Quality Surface
 12
 0.0
 1
 
 SWITCH
-234
-444
-439
-477
+243
+546
+448
+579
 hab_quality_per_frag
 hab_quality_per_frag
 1
@@ -1398,20 +1431,20 @@ hab_quality_per_frag
 -1000
 
 TEXTBOX
-230
-412
-480
-454
+239
+514
+489
+556
 Generating habitat quality surface, per fragment based on patches_ID layer
 10
 0.0
 1
 
 SLIDER
-224
-559
-356
-592
+364
+619
+464
+652
 autocorrelation
 autocorrelation
 1
@@ -1423,31 +1456,31 @@ NIL
 HORIZONTAL
 
 SWITCH
-226
-523
-353
-556
+246
+619
+361
+652
 ac_simple
 ac_simple
-0
+1
 1
 -1000
 
 TEXTBOX
-235
-487
-454
-520
+244
+589
+463
+622
 Generating habitat quality surface based on spatial autocorrelation simple or complex
 10
 0.0
 1
 
 INPUTBOX
-26
-568
-100
-628
+35
+670
+109
+730
 En_mean
 0.3
 1
@@ -1455,10 +1488,10 @@ En_mean
 Number
 
 INPUTBOX
-105
-568
-177
-628
+114
+670
+186
+730
 En_sd
 0.1
 1
@@ -1484,20 +1517,20 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [min_En] of turtles"
 
 TEXTBOX
-26
-253
-210
-283
+35
+355
+219
+385
 Initial Hab Quality Requirement (C)
 12
 0.0
 1
 
 SWITCH
-26
-285
-143
-318
+35
+387
+152
+420
 origin_site
 origin_site
 1
@@ -1525,10 +1558,10 @@ Histogram of Settlers for each behaviour
 1
 
 SLIDER
-239
-204
-438
-237
+248
+306
+447
+339
 min_step_before_settle
 min_step_before_settle
 0
@@ -1540,10 +1573,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-24
-124
-222
-157
+33
+226
+231
+259
 mortality_matrix
 mortality_matrix
 0
@@ -1573,23 +1606,23 @@ PENS
 "default" 1.0 0 -16777216 true "" "histogram [Ci] of turtles"
 
 INPUTBOX
-25
-323
-89
-383
+34
+425
+98
+485
 min_Ci
-0.7
+0.5
 1
 0
 Number
 
 INPUTBOX
-92
-323
-157
-383
+101
+425
+166
+485
 var_Ci
-0.3
+0.2
 1
 0
 Number
@@ -1603,6 +1636,85 @@ Basic Results
 14
 0.0
 1
+
+INPUTBOX
+29
+38
+117
+98
+world-size
+256.0
+1
+0
+Number
+
+INPUTBOX
+122
+38
+208
+98
+patch-sizes
+1.8
+1
+0
+Number
+
+INPUTBOX
+213
+38
+331
+98
+patch-resolution
+10.0
+1
+0
+Number
+
+TEXTBOX
+29
+11
+179
+29
+Define World:
+14
+0.0
+1
+
+PLOT
+1471
+631
+1720
+764
+Total Distance Moved
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"  ;set-plot-x-range 0 1\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1" " if count turtles with [status = \"dis\"] = 0\n [ set-plot-x-range 0 max [total_dist] of turtles\n  set-plot-y-range 0 5\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1\n  ]"
+PENS
+"pen-1" 1.0 0 -16777216 true "" "histogram [total_dist] of turtles"
+
+PLOT
+1725
+631
+1957
+764
+Linear Distance Moved
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" " if count turtles with [status = \"dis\"] = 0 [\n  set-plot-x-range 0 max [linear_dist] of turtles\n  set-plot-y-range 0 10\n  set-histogram-num-bars 20\n  set-plot-pen-mode 1\n  ]"
+PENS
+"default" 1.0 1 -16777216 true "" "histogram [linear_dist] of turtles"
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1951,77 +2063,15 @@ NetLogo 6.2.2
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment_linux" repetitions="1" runMetricsEveryStep="false">
-    <setup>setup</setup>
-    <go>go</go>
-    <enumeratedValueSet variable="data_directory">
-      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/data&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="output_directory">
-      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/output&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="landscape_directory">
-      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/100land_10res/landscape_100land_10res/&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="mortality_rate_dispersal">
-      <value value="0.01"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="perceptual_range">
-      <value value="200"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Specie">
-      <value value="&quot;DA&quot;"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="num_lands" first="0" step="1" last="4"/>
-    <enumeratedValueSet variable="individuals">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="max_distance_per_day">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="discharge-rate">
-      <value value="0.01"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="recharge-rate">
-      <value value="0.01"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="min_en">
-      <value value="0.1"/>
-      <value value="0.5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="initial">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="interval">
-      <value value="0.5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="ends">
-      <value value="2"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="ns">
-      <value value="0.09"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="movement_parameters_output">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="occupancy_output">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="path_outputs">
-      <value value="false"/>
-    </enumeratedValueSet>
-  </experiment>
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <enumeratedValueSet variable="min_step_before_settle">
-      <value value="5"/>
-    </enumeratedValueSet>
+    <final>r:stop</final>
     <enumeratedValueSet variable="dsd">
       <value value="100"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="mortality_rate_dispersal">
-      <value value="0.01"/>
+    <enumeratedValueSet variable="mortality_matrix">
+      <value value="0.001"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="movement_parameters_output">
       <value value="false"/>
@@ -2038,14 +2088,17 @@ NetLogo 6.2.2
     <enumeratedValueSet variable="dmean">
       <value value="1000"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="N_path">
-      <value value="2"/>
+    <enumeratedValueSet variable="patch-sizes">
+      <value value="1.8"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ends">
       <value value="2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="individuals">
       <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="world-size">
+      <value value="256"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="path_outputs">
       <value value="false"/>
@@ -2056,31 +2109,64 @@ NetLogo 6.2.2
     <enumeratedValueSet variable="discharge-rate">
       <value value="0.01"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="autocorrelation">
+      <value value="6"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="output_directory">
       <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/output&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="import_hab_quality_surface">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hab_quality_folder">
+      <value value="&quot;hab_quality/256/&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="En_mean">
+      <value value="0.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="occupancy_output">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min_step_before_settle">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="origin_site">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="var_Ci">
+      <value value="0.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="En_sd">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="N_path">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mortality_habitat">
+      <value value="0.002"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="patch-resolution">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ac_simple">
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="landscape_directory">
       <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ac">
-      <value value="0.5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="hab_quality_folder">
-      <value value="&quot;hab_quality/256/&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="min_en">
-      <value value="0.3"/>
+      <value value="0"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="Specie">
       <value value="&quot;DA&quot;"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="occupancy_output">
+    <enumeratedValueSet variable="hab_quality_per_frag">
       <value value="false"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="num_lands" first="64" step="1" last="99"/>
+    <steppedValueSet variable="num_lands" first="10" step="1" last="99"/>
+    <enumeratedValueSet variable="min_Ci">
+      <value value="0.6"/>
+    </enumeratedValueSet>
   </experiment>
 </experiments>
 @#$#@#$#@
