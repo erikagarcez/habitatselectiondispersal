@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<title>
+      NetLogo 6.2.2 User Manual: Palette Extension
+    </title>
+    <link rel="stylesheet" href="netlogo.css" type="text/css">
+    <style type="text/css">
+p { margin-left: 1.5em ; }
+    h3 { font-size: 115% ; }
+    h4 { font-size: 100% ; margin-left: 1.5em ; background: white ; }
+    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<h1>NetLogo Palette Extension</h1>
+<h2><a href="#using-the-palette-extension" id="using-the-palette-extension" class="section-anchor">Using the Palette Extension</a></h2>
+<p>The NetLogo palette extension offers the user more control over their colors. The colors go beyond NetLogo colors, including ColorBrewer color schemes and arbitrary RGB colors. Additionally, users can control specific components of their color such as alpha, hue and red.</p>
+<h2><a href="#getting-started" id="getting-started" class="section-anchor">Getting Started</a></h2>
+<p>To get started with palettes add to the top of your Code tab:</p>
+<pre><code>extensions [palette]
+</code></pre>
+<p>you can then call any of the primitives by adding <code>palette:</code> before the primitive:</p>
+<pre><code>palette:hue-of
+palette:set-saturation
+
+palette:scale-gradient
+palette:scale-scheme
+</code></pre>
+<h2><a href="#background" id="background" class="section-anchor">Background</a></h2>
+<h3><a href="#review-of-color-representation-in-netlogo" id="review-of-color-representation-in-netlogo" class="section-anchor">Review of color representation in NetLogo</a></h3>
+<h4><a href="#colors-can-be-represented-as-netlogo-colors-or-rgb-or-rgba-colors" id="colors-can-be-represented-as-netlogo-colors-or-rgb-or-rgba-colors" class="section-anchor">Colors can be represented as NetLogo colors or RGB or RGBA colors</a></h4>
+<ul>
+<li>A NetLogo color (NLC or NL color) is a number in the range 0 to 140, with the exception of 140 itself, other values are ‘wrapped.&rsquo;
+<ul>
+<li>NetLogo colors are shades of a base color which has units digit 5, and is in the middle of the shade range.</li>
+</ul>
+</li>
+<li>An RGB color is a list of 3 numbers.
+<ul>
+<li>The numbers represent red, green and blue and are in the range 0 to 255.</li>
+</ul>
+</li>
+<li>An RGBA color is a list of 4 numbers.
+<ul>
+<li>The fourth number is called alpha and is in the range 0 to 255.</li>
+<li>Alpha represents transparency with 0 fully transparent, and 255 fully opaque.</li>
+</ul>
+</li>
+<li>RGB/A will be used to denote a color that is either RGB or RGBA.</li>
+</ul>
+<h4><a href="#transparency" id="transparency" class="section-anchor">Transparency</a></h4>
+<p>The degree to which one can see through a color can also be specified by referring to <em>transparency</em>. Transparency is in the range 0 to 100, with 0 fully opaque and 100 fully transparent. Transparency is not stored as part of a color, but is mathematically converted to and from alpha.</p>
+<h4><a href="#hsb-color-specification" id="hsb-color-specification" class="section-anchor">HSB Color Specification</a></h4>
+<p>Colors can also be specified (but not stored as color values) by reference to HSB - hue, saturation and brightness.</p>
+<ul>
+<li>Hue ranges 0 to 360 and forms a cycle.</li>
+<li>Saturation ranges 0 to 100.</li>
+<li>Brightness ranges 0 to 100.</li>
+<li>For more information, search the web for &lsquo;hsb color system.&rsquo;</li>
+</ul>
+<h3><a href="#more-control-over-the-color" id="more-control-over-the-color" class="section-anchor">More control over the color</a></h3>
+<p>Palette primitives allow the user to:</p>
+<ul>
+<li>Report a specific component of a color
+<ul>
+<li>e.g. palette:hue-of</li>
+</ul>
+</li>
+<li>Report the result of changing a specific component of a color
+<ul>
+<li>e.g. palette:with-hue</li>
+</ul>
+</li>
+<li>Report a specific component of an agent&rsquo;s color
+<ul>
+<li>e.g. palette:hue</li>
+</ul>
+</li>
+<li>Change a specific component of an agent&rsquo;s color
+<ul>
+<li>e.g. palette:set-hue</li>
+</ul>
+</li>
+</ul>
+<p>The user can also create color gradients and access ColorBrewer color schemes.</p>
+<h3><a href="#varying-an-agents-transparency-or-color" id="varying-an-agents-transparency-or-color" class="section-anchor">Varying an Agent&rsquo;s Transparency or Color</a></h3>
+<p>You can make a turtle more transparent by decreasing alpha, or increasing transparency.
+A similar approach can be used to adjust color components such as brightness.
+Here are two examples:</p>
+<pre><code>ask turtles [ palette:set-transparency palette:transparency  + 10 ]
+ask turtles [ palette:set-alpha .9 * palette:alpha ]
+</code></pre>
+<p>Because an error will result if the value passed to a set command is not in the correct range, a little additional code is sometimes needed.</p>
+<pre><code>ask turtles [ palette:set-transparency min list  100 (palette:transparency + 10) ]
+ask turtles [ palette:set-alpha max list 0 (palette:alpha - 25.5) ]
+</code></pre>
+<h3><a href="#how-do-i-choose-a-color-scheme" id="how-do-i-choose-a-color-scheme" class="section-anchor">How do I choose a color scheme?</a></h3>
+<p>ColorBrewer has three kinds of color schemes: Sequential, Divergent and Qualitative. Although choosing a color palette is a design problem that does not have a single solution we offer the following guidelines for choosing colors for a NetLogo model:</p>
+<h4><a href="#decide-first-whether-to-use-a-sequential-divergent-or-qualitative-color-scheme" id="decide-first-whether-to-use-a-sequential-divergent-or-qualitative-color-scheme" class="section-anchor">Decide first whether to use a Sequential, Divergent or Qualitative color scheme</a></h4>
+<ul>
+<li>Sequential color schemes are best for models of continuous natural phenomena such as as heat diffusion in physics or fire in earth sciences.</li>
+<li>Divergent color schemes are useful for highlighting a middle value in a model. Therefore they could be used with the heat diffusion model if the goal were to highlight regions with the middle temperature.</li>
+<li>Qualitative colors are best for choosing colors in models where color denotes category and not value.</li>
+</ul>
+<h4><a href="#additional-color-considerations" id="additional-color-considerations" class="section-anchor">Additional color considerations</a></h4>
+<ul>
+<li>For agents that cover large areas avoid strong colors and try to use pastel colors. However, for a few small isolated agents try to use strong colors such as such an accent.</li>
+<li>The main goal is to avoid having a large area covered with agents with a bright color and or having small areas having a muted pastel color.</li>
+<li>If you are coloring both turtles and patches, make sure they have different ranges of hue, saturation and value. For example, use different hues of pastel for patches and accent for turtles.</li>
+</ul>
+<p>You can learn more about the use of these color collections in the original ColorBrewer paper (Harrower, Brewer 2003), which focuses on their application to maps. See (Kornhauser, Wilensky, and Rand 1999) for design guidelines for visualization of Agent Based Models.</p>
+<h3><a href="#should-i-use-a-continuous-color-gradient-or-just-a-discrete-color-set" id="should-i-use-a-continuous-color-gradient-or-just-a-discrete-color-set" class="section-anchor">Should I use a continuous color gradient or just a discrete color set?</a></h3>
+<p>The answer depends on the focus of the user experience.</p>
+<p>For example, gradients are more aesthetic thus are more memorable than discrete colors. Consequently, a gradient can be a better choice for presentations where the main goal of the image is to be attractive and memorable. However, binning values in a discrete set of colors simplifies tasks such as estimation and counting by removing unnecessary detail and focusing on the big picture. Thus, discrete colors can be a better choice for a written document for which the user will have the time and interest to study the visualization.</p>
+<p>In order to see the difference you can turn on and off the gradient in the Heat Diffusion model. You can observe that turning gradient on makes the model more aesthetic, but it becomes harder to estimate the value of a patch at a given position.</p>
+<h3><a href="#example-models" id="example-models" class="section-anchor">Example Models</a></h3>
+<p>There are a few examples of using the palette primitives in the Code Examples section of the models library:</p>
+<ul>
+<li>Palette Example</li>
+<li>Color Bubbles</li>
+<li>Color Painting</li>
+<li>Color Reveal</li>
+</ul>
+<p>And one Sample Model that uses the extension:</p>
+<ul>
+<li>Heat Diffusion - Alternative Gradient</li>
+</ul>
+<h3><a href="#further-reading" id="further-reading" class="section-anchor">Further Reading</a></h3>
+<ul>
+<li>Be sure to check the <a href="http://colorbrewer2.org/" target="_blank">ColorBrewer web page</a>.</li>
+<li>To get a deeper understanding of how to use the color schemes read the ColorBrewer paper (Harrower, Brewer 2003).</li>
+</ul>
+<h2>Primitives</h2>
+<div id="">
+  <a href="#palette:alpha-of"><code>palette:alpha-of</code></a>
+  <a href="#palette:with-alpha"><code>palette:with-alpha</code></a>
+  <a href="#palette:alpha"><code>palette:alpha</code></a>
+  <a href="#palette:set-alpha"><code>palette:set-alpha</code></a>
+  <a href="#palette:transparency-of"><code>palette:transparency-of</code></a>
+  <a href="#palette:with-transparency"><code>palette:with-transparency</code></a>
+  <a href="#palette:transparency"><code>palette:transparency</code></a>
+  <a href="#palette:set-transparency"><code>palette:set-transparency</code></a>
+  <a href="#palette:hue-of"><code>palette:hue-of</code></a>
+  <a href="#palette:with-hue"><code>palette:with-hue</code></a>
+  <a href="#palette:hue"><code>palette:hue</code></a>
+  <a href="#palette:set-hue"><code>palette:set-hue</code></a>
+  <a href="#palette:saturation-of"><code>palette:saturation-of</code></a>
+  <a href="#palette:with-saturation"><code>palette:with-saturation</code></a>
+  <a href="#palette:saturation"><code>palette:saturation</code></a>
+  <a href="#palette:set-saturation"><code>palette:set-saturation</code></a>
+  <a href="#palette:brightness-of"><code>palette:brightness-of</code></a>
+  <a href="#palette:with-brightness"><code>palette:with-brightness</code></a>
+  <a href="#palette:brightness"><code>palette:brightness</code></a>
+  <a href="#palette:set-brightness"><code>palette:set-brightness</code></a>
+  <a href="#palette:r-of"><code>palette:R-of</code></a>
+  <a href="#palette:with-r"><code>palette:with-R</code></a>
+  <a href="#palette:r"><code>palette:R</code></a>
+  <a href="#palette:set-r"><code>palette:set-R</code></a>
+  <a href="#palette:g-of"><code>palette:G-of</code></a>
+  <a href="#palette:with-g"><code>palette:with-G</code></a>
+  <a href="#palette:g"><code>palette:G</code></a>
+  <a href="#palette:set-g"><code>palette:set-G</code></a>
+  <a href="#palette:b-of"><code>palette:B-of</code></a>
+  <a href="#palette:with-b"><code>palette:with-B</code></a>
+  <a href="#palette:b"><code>palette:B</code></a>
+  <a href="#palette:set-b"><code>palette:set-B</code></a>
+  <a href="#palette:scale-gradient"><code>palette:scale-gradient</code></a>
+  <a href="#palette:scale-gradient-hsb"><code>palette:scale-gradient-hsb</code></a>
+  <a href="#palette:scheme-colors"><code>palette:scheme-colors</code></a>
+  <a href="#palette:scale-scheme"><code>palette:scale-scheme</code></a>
+  <a href="#palette:scheme-dialog"><code>palette:scheme-dialog</code></a>
+</div>
+<div class="dict_entry" id="palette:alpha-of">
+  <h3><a>palette:alpha-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:alpha-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 255 representing the alpha of the given NL, RGB or RGBA <em>color</em>. The alpha value of an NL or RGB color is 255.</p>
+<p>Example:</p>
+<pre><code>show palette:alpha-of red ;; 255
+show palette:alpha-of [3 14 159 26] ;; 26
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-alpha">
+  <h3><a>palette:with-alpha</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-alpha <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with alpha component equal to <em>number</em> and the RGB content of <em>color</em>. An error message results if alpha is not in the range from 0 to 255.</p>
+<p>Example:</p>
+<pre><code>show [12 34 55 6] palette:with-alpha 99 ;; [12 34 55 99]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:alpha">
+  <h3><a>palette:alpha</a></h3>
+  <h4>
+    <span class="prim_example">palette:alpha</span>
+  </h4>
+<p>Get the alpha value of the color of the agent. The alpha value of an NL or RGB color is 255.</p>
+<p>Example:</p>
+<pre><code>show [palette:alpha] of turtles
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-alpha">
+  <h3><a>palette:set-alpha</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-alpha <i>number</i></span>
+  </h4>
+<p>Set the color of the agent to the RGBA color with alpha value <em>number</em> and the RGB content of the color of the turtle or link (or patch in NetLogo3D). An error message results if <em>number</em> is not in the range 0 to 255.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-alpha 100]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:transparency-of">
+  <h3><a>palette:transparency-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:transparency-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 100 representing the percent transparency of the given NL, RGB or RGBA <em>color</em>. The percent transparency of an NL or RGB color is 0.</p>
+<p>Example:</p>
+<pre><code>show palette:transparency-of [100 100 100 100] ;; 60.7843137254902
+show palette:transparency-of red ;; 0
+
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-transparency">
+  <h3><a>palette:with-transparency</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-transparency <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with an alpha value equivalent to the transparency <em>number</em> and the RGB content of <em>color</em>. An error message results if <em>number</em> is not in the range 0 to 100.</p>
+<p>Example:</p>
+<pre><code>show red palette:with-transparency 100 ;; [215 50 41 0]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:transparency">
+  <h3><a>palette:transparency</a></h3>
+  <h4>
+    <span class="prim_example">palette:transparency</span>
+  </h4>
+<p>Reports the transparency equivalent of the agent&rsquo;s alpha.</p>
+<p>Example:</p>
+<pre><code>show [palette:transparency] of turtles
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-transparency">
+  <h3><a>palette:set-transparency</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-transparency <i>number</i></span>
+  </h4>
+<p>Set the color of the agent to the RGBA color with alpha value equivalent to the transparency <em>number</em> and the RGB content of the color of the turtle or link. An error message results if <em>number</em> is not in the range 0 to 100.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-transparency 30]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:hue-of">
+  <h3><a>palette:hue-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:hue-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 360 representing the hue component in HSB color space of the given NL, RGB or RGBA <em>color</em>.</p>
+<p>Example:</p>
+<pre><code>show palette:hue-of red ;; 3.103
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-hue">
+  <h3><a>palette:with-hue</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-hue <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with hue component in HSB color space equal to <em>number</em> and the other HSB components of the input <em>color</em> unchanged. An error message results if <em>number</em> is not in the range 0 to 360.</p>
+<p>Example:</p>
+<pre><code>show red palette:with-hue 100 ;; [99 215 41]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:hue">
+  <h3><a>palette:hue</a></h3>
+  <h4>
+    <span class="prim_example">palette:hue</span>
+  </h4>
+<p>Reports a number in the range 0 to 360 that represents the hue of an agent’s color or pcolor.</p>
+<p>Example:</p>
+<pre><code>crt 1 [set color red]
+[palette:hue] of turtle 0 ;; 3.103
+
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-hue">
+  <h3><a>palette:set-hue</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-hue <i>number</i></span>
+  </h4>
+<p>Changes an agent’s hue value to <em>number</em>, leaving the other HSB components unchanged. An error message results if <em>number</em> is not in the range from 0 to 360.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-hue 30]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:saturation-of">
+  <h3><a>palette:saturation-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:saturation-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 100 representing the saturation component in HSB color space of the given NL, RGB or RGBA <em>color</em>.</p>
+<p>Example:</p>
+<pre><code>show palette:saturation-of red ;; 80.93
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-saturation">
+  <h3><a>palette:with-saturation</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-saturation <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with saturation component in HSB color space equal to <em>number</em> and the other HSB components of the input <em>color</em> unchanged. An error message results if <em>number</em> is not in the range 0 to 100.</p>
+<p>Example:</p>
+<pre><code>show red palette:with-saturation 50 ;; [215 113 108]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:saturation">
+  <h3><a>palette:saturation</a></h3>
+  <h4>
+    <span class="prim_example">palette:saturation</span>
+  </h4>
+<p>Reports a number in the range 0 to 100 that represents the saturation of an agent’s color or pcolor.</p>
+<p>Example:</p>
+<pre><code>crt 1 [set color red]
+[palette:saturation] of turtle 0 ;; 80.93
+
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-saturation">
+  <h3><a>palette:set-saturation</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-saturation <i>number</i></span>
+  </h4>
+<p>Changes an agent’s saturation leaving the other HSB components unchanged. An error message results if <em>number</em> is not in the range from 0 to 100.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-saturation 30]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:brightness-of">
+  <h3><a>palette:brightness-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:brightness-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 100 representing the brightness component in HSB color space of the given NL, RGB or RGBA <em>color</em>.</p>
+<p>Example:</p>
+<pre><code>show palette:brightness-of red ;; 84.314
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-brightness">
+  <h3><a>palette:with-brightness</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-brightness <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with brightness component in HSB color space equal to <em>number</em> and the other HSB components of the input <em>color</em> unchanged. An error message results if <em>number</em> is not in the range 0 to 100.</p>
+<p>Example:</p>
+<pre><code>show red palette:with-brightness 50 ;; [128 30 24]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:brightness">
+  <h3><a>palette:brightness</a></h3>
+  <h4>
+    <span class="prim_example">palette:brightness</span>
+  </h4>
+<p>Reports a number in the range 0 to 100 that represents the brightness of an agent’s color or pcolor.</p>
+<p>Example:</p>
+<pre><code>crt 1 [set color red]
+[palette:brightness] of turtle 0 ;; 84.314
+
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-brightness">
+  <h3><a>palette:set-brightness</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-brightness <i>number</i></span>
+  </h4>
+<p>Changes an agent’s brightness leaving the other HSB components unchanged. An error message results if <em>number</em> is not in the range from 0 to 100.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-brightness 30]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:r-of">
+  <h3><a>palette:R-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:R-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 255 representing the red component in the RGB color space of the given NL, RGB or RGBA <em>color</em>.</p>
+<p>Example:</p>
+<pre><code>show palette:R-of red ;; 215
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-r">
+  <h3><a>palette:with-R</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-R <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with red component in RGB color space equal to <em>number</em> and the other RGB components of the input <em>color</em> unchanged. An error message results if <em>number</em> is not in the range 0 to 255.</p>
+<p>Example:</p>
+<pre><code>show red palette:with-R 50 ;; [50 50 41]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:r">
+  <h3><a>palette:R</a></h3>
+  <h4>
+    <span class="prim_example">palette:R</span>
+  </h4>
+<p>Reports a number in the range 0 to 255 that represents the red of an agent’s color or pcolor.</p>
+<p>Example:</p>
+<pre><code>crt 1 [set color red]
+[palette:R] of turtle 0 ;; 215
+
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-r">
+  <h3><a>palette:set-R</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-R <i>number</i></span>
+  </h4>
+<p>Changes an agent’s red component of its RGB/A color leaving the other RGB components unchanged. An error message results if <em>number</em> is not in the range from 0 to 255.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-R 30]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:g-of">
+  <h3><a>palette:G-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:G-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 255 representing the green component in the RGB color space of the given NL, RGB or RGBA <em>color</em>.</p>
+<p>Example:</p>
+<pre><code>show palette:G-of red ;; 50
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-g">
+  <h3><a>palette:with-G</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-G <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with green component in RGB color space equal to <em>number</em> and the other RGB components of the input <em>color</em> unchanged. An error message results if <em>number</em> is not in the range 0 to 255.</p>
+<p>Example:</p>
+<pre><code>show red palette:with-G 56 ;; [215 56 41]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:g">
+  <h3><a>palette:G</a></h3>
+  <h4>
+    <span class="prim_example">palette:G</span>
+  </h4>
+<p>Reports a number in the range 0 to 255 that represents the green of an agent’s color or pcolor.</p>
+<p>Example:</p>
+<pre><code>crt 1 [set color red]
+[palette:G] of turtle 0 ;; 50
+
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-g">
+  <h3><a>palette:set-G</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-G <i>number</i></span>
+  </h4>
+<p>Changes an agent’s green component of its RGB/A color leaving the other RGB components unchanged. An error message results if <em>number</em> is not in the range from 0 to 255.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-G 30]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:b-of">
+  <h3><a>palette:B-of</a></h3>
+  <h4>
+    <span class="prim_example">palette:B-of <i>color</i></span>
+  </h4>
+<p>Reports a value in the range 0 to 255 representing the blue component in the RGB color space of the given NL, RGB or RGBA <em>color</em>.</p>
+<p>Example:</p>
+<pre><code>show palette:B-of red ;; 41
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:with-b">
+  <h3><a>palette:with-B</a></h3>
+  <h4>
+    <span class="prim_example"><i>color</i> palette:with-B <i>number</i></span>
+  </h4>
+<p>Reports an RGBA color with blue component in RGB color space equal to <em>number</em> and the other RGB components of the input <em>color</em> unchanged. An error message results if <em>number</em> is not in the range 0 to 255.</p>
+<p>Example:</p>
+<pre><code>show red palette:with-B 56 ;; [215 50 56]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:b">
+  <h3><a>palette:B</a></h3>
+  <h4>
+    <span class="prim_example">palette:B</span>
+  </h4>
+<p>Reports a number in the range 0 to 255 that represents the blue of an agent’s color or pcolor.</p>
+<p>Example:</p>
+<pre><code>crt 1 [set color red]
+[palette:B] of turtle 0 ;; 41
+
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:set-b">
+  <h3><a>palette:set-B</a></h3>
+  <h4>
+    <span class="prim_example">palette:set-B <i>number</i></span>
+  </h4>
+<p>Changes an agent’s blue component of its RGB/A color leaving the other RGB components unchanged. An error message results if <em>number</em> is not in the range from 0 to 255.</p>
+<p>Example:</p>
+<pre><code>ask turtles [palette:set-B 30]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:scale-gradient">
+  <h3><a>palette:scale-gradient</a></h3>
+  <h4>
+    <span class="prim_example">palette:scale-gradient <i>rgb-color-list</i> <i>number</i> <i>range1</i> <i>range2</i></span>
+  </h4>
+<p>Reports an RGB color proportional to <em>number</em> using a gradient generated with <em>rgb-color-list</em>. The <em>rgb-color-list</em> is a list containing NL or RGB colors: e.g. [NL1 [r1 g1 b1]  [r2 g2 b2] [r3 g3 b3] NL2 …].</p>
+<p>When <em>range1</em> is less than or equal to <em>range2</em>, the color will be directly mapped to gradient colors. When <em>range2</em> is less than <em>range1</em>, the color gradient is inverted.</p>
+<p>Let <em>min-range</em> be the minimum of <em>range1</em> and <em>range2</em>. If <em>number</em> is less than or equal to <em>min-range</em>, then the result is the same as if <em>number</em> was equal to <em>min-range</em>.</p>
+<p>Let <em>max-range</em> be the maximum of <em>range1</em> and <em>range2</em>. If <em>number</em> is greater than <em>max-range</em>, then the result is the same as if <em>number</em> was equal to <em>max-range</em>.</p>
+<p>Example:</p>
+<pre><code>ask patches
+[
+  set pcolor palette:scale-gradient [[255 0 0] [0 0 255]] pxcor min-pxcor max-pxcor
+]
+
+;; colors each patch with a color proportional to the gradient
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:scale-gradient-hsb">
+  <h3><a>palette:scale-gradient-hsb</a></h3>
+  <h4>
+    <span class="prim_example">palette:scale-gradient-hsb <i>rgb-color-list</i> <i>number</i> <i>range1</i> <i>range2</i></span>
+  </h4>
+<p>Reports an RGB color equivalent to a color in HSB space proportional to <em>number</em> using a gradient generated with <em>hsb-list</em>. The <em>hsb-list</em> is a list containing three-element lists of HSB colors: [[h1 s1 b1] [h2 s2 b2] [h3 s3 b3]  …].</p>
+<p>When <em>range1</em> is less than or equal to <em>range2</em>, the HSB color will be directly mapped to gradient HSB colors. When range2 is less than range1, the color gradient is inverted.</p>
+<p>Let <em>min-range</em> be the minimum of <em>range1</em> and <em>range2</em>. If <em>number</em> is less than or equal to <em>min-range</em>, then the result is the same as if <em>number</em> was equal to <em>min-range</em>.</p>
+<p>Let <em>max-range</em> be the maximum of <em>range1</em> and <em>range2</em>. If <em>number</em> is greater than <em>max-range</em>, then the result is the same as if <em>number</em> was equal to <em>max-range</em>.</p>
+<p>Example:</p>
+<pre><code>ask patches
+[
+ask patches [set pcolor palette:scale-gradient-hsb [[200 50 50] [100 60 70]] pxcor min-pxcor max-pxcor]
+]
+
+;; colors each patch with a color proportional to the gradient
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:scheme-colors">
+  <h3><a>palette:scheme-colors</a></h3>
+  <h4>
+    <span class="prim_example">palette:scheme-colors <i>scheme-type</i> <i>scheme-color</i> <i>number-of-classes</i></span>
+  </h4>
+<p>Reports a list of RGB colors using ColorBrewer scheme of type <em>scheme-type</em> with name <em>scheme-color</em> containing <em>number-of-classes</em> colors. Scheme types are &ldquo;Sequential,&rdquo; &ldquo;Divergent&rdquo; and &ldquo;Qualitative.&rdquo; The choice of scheme names depends on the scheme type and includes &ldquo;Reds&rdquo;, &ldquo;Spectral&rdquo; and &ldquo;Set1&rdquo;. The minimum number of colors is 3 and a maximum is between 8 and 12 depending on the color scheme. For more information go to <a href="http://www.colorbrewer.org" target="_blank">http://www.colorbrewer.org</a>.</p>
+<p>Example:</p>
+<pre><code>show palette:scheme-colors &quot;Divergent&quot; &quot;Spectral&quot; 3
+=&gt; [[252 141 89] [255 255 191] [153 213 148]]
+
+
+; The scheme-colors primitive can be used with the scale-gradient primitive.
+ask patches
+  [set pcolor palette:scale-gradient palette:scheme-colors &quot;Divergent&quot; &quot;Spectral&quot; 9 pxcor min-pxcor max-pxcor]
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:scale-scheme">
+  <h3><a>palette:scale-scheme</a></h3>
+  <h4>
+    <span class="prim_example">palette:scale-scheme <i>scheme-type</i> <i>scheme-color</i> <i>number-of-classes</i> <i>number</i> <i>range1</i> <i>range2</i></span>
+  </h4>
+<p>Reports an RGB color from the ColorBrewer scheme of type <em>scheme-type</em> with name <em>scheme-color</em> containing <em>number-of-classes</em> colors. The color is chosen using the proportionality of <em>number</em> in the range specified by <em>range1</em> and <em>range2</em>.</p>
+<p>When <em>range1</em> is less than or equal to <em>range2</em>, the colors are ordered as in the ColorBrewer scheme. When <em>range2</em> is less than <em>range1</em>, the color order is reversed.</p>
+<p>Let <em>min-range</em> be the minimum of <em>range1</em> and <em>range2</em>. If <em>number</em> is less or equal to than <em>min-range</em>, then the result is the same as if <em>number</em> was equal to <em>min-range</em>. This will be the first color in the color list if <em>range1</em> is less than <em>range2</em>.</p>
+<p>Let <em>max-range</em> be the maximum of <em>range1</em> and <em>range2</em>. If <em>number</em> is greater than <em>max-range</em>, then the result is the same as if <em>number</em> was equal to <em>max-range</em>. This will be the last color in the color list if <em>range1</em> is less than <em>range2</em>.</p>
+<p>Example:</p>
+<pre><code>ask patches
+[
+  set pcolor palette:scale-scheme &quot;Divergent&quot; &quot;Spectral&quot; 8 pxcor min-pxcor max-pxcor
+]
+
+;; colors each patch with a color from the Color Brewer Schemes
+</code></pre>
+</div>
+<div class="dict_entry" id="palette:scheme-dialog">
+  <h3><a>palette:scheme-dialog</a></h3>
+  <h4>
+    <span class="prim_example">palette:scheme-dialog</span>
+  </h4>
+<p>Launches a dialog for previewing all the ColorBrewer color schemes.</p>
+<p>Use the leftmost pulldown menu to select the scheme type: &ldquo;Sequential,&rdquo; &ldquo;Divergent&rdquo; or &ldquo;Qualitative.&rdquo; Use the next pulldown menu to select a named scheme. Finally select the number of colors. The maximum number depends on the color scheme. Use the <em>Copy</em> button to copy the scheme information into the clipboard. This information can be pasted into commands such as <em>palette:scheme-colors</em>. The <em>Close</em> button can be used to close the dialog.</p>
+<p>Example:</p>
+<pre><code>  palette:scheme-dialog
+
+  ;; In the dialog the user selects scheme type &quot;Divergent,&quot; the scheme named &quot;Spectral,&quot; and the number 3, and clicks the *Copy* button.
+  ;; In the Command Center the user types &quot;show palette:scheme-colors &quot; and then pastes the clipboard contents, and hits *Enter*.
+
+  show palette:scheme-colors &quot;Divergent&quot; &quot;Spectral&quot; 3
+
+  =&gt; [[252 141 89] [255 255 191] [153 213 148]]
+</code></pre>
+</div>
+<h2><a href="#references" id="references" class="section-anchor">References</a></h2>
+<p>ColorBrewer <a href="http://www.colorbrewer.org" target="_blank">www.colorbrewer.org</a></p>
+<p>HARROWER, M. and C. BREWER (2003). <a href="https://www.tandfonline.com/doi/abs/10.1179/000870403235002042" target="_blank">ColorBrewer: An online tool for selecting color schemes for maps</a>. <em>The Cartographic Journal</em> 40(1): 27-37. )</p>
+<p>HEALEY, C G (2006) <a href="http://www.csc.ncsu.edu/faculty/healey/PP/index.html" target="_blank">Perception in Visualization</a>, (comprehensive review updated regularly).</p>
+<p>HEALEY, C G, BOOTH K S, and ENNS, J T (1995). <a href="https://www.csc2.ncsu.edu/faculty/healey/download/tomacs.95.pdf" target="_blank">Visualizing Real-Time Multivariate Data Using Preattentive Processing</a>. <em>ACM Transactions on Modeling and Computer Simulation</em> 5, 3, 190-221.</p>
+<p>KORNHAUSER, D, WILENSKY, U and RAND, W (1999). <a href="https://www.jasss.org/12/2/1.html" target="_blank">Design Guidelines for Agent Based Model Visualization</a>. <em>Journal of Artificial Societies and Social Simulation</em> 12(2)1.</p>
+<p>TUFTE, E (1983) The Visual Display of Quantitative Information, Graphics Press.</p>
+<p>WARE, C (2004) Information Visualization, 2nd Ed., Morgan Kaufmann.</p>

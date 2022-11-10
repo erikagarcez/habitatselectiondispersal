@@ -1,0 +1,2185 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+          <title>NetLogo 6.2.2 - org.nlogo.app.AppTabManager</title>
+          <meta name="description" content="NetLogo 6.2.2 - org.nlogo.app.AppTabManager" />
+          <meta name="keywords" content="NetLogo 6.2.2 org.nlogo.app.AppTabManager" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      
+      <link href="../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../lib/jquery.min.js"></script>
+      <script type="text/javascript" src="../../../lib/jquery.panzoom.min.js"></script>
+      <script type="text/javascript" src="../../../lib/jquery.mousewheel.min.js"></script>
+      <script type="text/javascript" src="../../../lib/index.js"></script>
+      <script type="text/javascript" src="../../../index.js"></script>
+      <script type="text/javascript" src="../../../lib/scheduler.js"></script>
+      <script type="text/javascript" src="../../../lib/template.js"></script>
+      
+      <script type="text/javascript">
+        /* this variable can be used by the JS to determine the path to the root document */
+        var toRoot = '../../../';
+      </script>
+    
+        </head>
+        <body>
+      <div id="search">
+        <span id="doc-title">NetLogo<span id="doc-version">6.2.2</span></span>
+        <span class="close-results"><span class="left">&lt;</span> Back</span>
+        <div id="textfilter">
+          <span class="input">
+            <input autocapitalize="none" placeholder="Search" id="index-input" type="text" accesskey="/" />
+            <i class="clear material-icons"></i>
+            <i id="search-icon" class="material-icons"></i>
+          </span>
+        </div>
+    </div>
+      <div id="search-results">
+        <div id="search-progress">
+          <div id="progress-fill"></div>
+        </div>
+        <div id="results-content">
+          <div id="entity-results"></div>
+          <div id="member-results"></div>
+        </div>
+      </div>
+      <div id="content-scroll-container" style="-webkit-overflow-scrolling: touch;">
+        <div id="content-container" style="-webkit-overflow-scrolling: touch;">
+          <div id="subpackage-spacer">
+            <div id="packages">
+              <h1>Packages</h1>
+              <ul>
+                <li name="_root_.root" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_root_"></a><a id="root:_root_"></a>
+      <span class="permalink">
+      <a href="../../../index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../../../index.html"><span class="name">root</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../../index.html" class="extype" name="_root_">root</a></dd></dl></div>
+    </li><li name="_root_.org" visbl="pub" class="indented1 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="org"></a><a id="org:org"></a>
+      <span class="permalink">
+      <a href="../../../org/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../../index.html"><span class="name">org</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../../index.html" class="extype" name="_root_">root</a></dd></dl></div>
+    </li><li name="org.nlogo" visbl="pub" class="indented2 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="nlogo"></a><a id="nlogo:nlogo"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="../index.html"><span class="name">nlogo</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../../index.html" class="extype" name="org">org</a></dd></dl></div>
+    </li><li name="org.nlogo.app" visbl="pub" class="indented3 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="app"></a><a id="app:app"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="index.html"><span class="name">app</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="org.nlogo">nlogo</a></dd></dl></div>
+    </li><li name="org.nlogo.app.codetab" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="codetab"></a><a id="codetab:codetab"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/codetab/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="codetab/index.html"><span class="name">codetab</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="index.html" class="extype" name="org.nlogo.app">app</a></dd></dl></div>
+    </li><li name="org.nlogo.app.common" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="common"></a><a id="common:common"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/common/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="common/index.html"><span class="name">common</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="index.html" class="extype" name="org.nlogo.app">app</a></dd></dl></div>
+    </li><li name="org.nlogo.app.infotab" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="infotab"></a><a id="infotab:infotab"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/infotab/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="infotab/index.html"><span class="name">infotab</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="index.html" class="extype" name="org.nlogo.app">app</a></dd></dl></div>
+    </li><li name="org.nlogo.app.interfacetab" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="interfacetab"></a><a id="interfacetab:interfacetab"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/interfacetab/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="interfacetab/index.html"><span class="name">interfacetab</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="index.html" class="extype" name="org.nlogo.app">app</a></dd></dl></div>
+    </li><li name="org.nlogo.app.tools" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tools"></a><a id="tools:tools"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/tools/index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="tools/index.html"><span class="name">tools</span></a>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="index.html" class="extype" name="org.nlogo.app">app</a></dd></dl></div>
+    </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="AboutWindow.html" title=""></a>
+                        <a href="AboutWindow.html" title="">AboutWindow</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="AbstractTabsPanel.html" title=""></a>
+                        <a href="AbstractTabsPanel.html" title="">AbstractTabsPanel</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="object" href="Adapters$.html" title=""></a>
+                        <a href="Adapters$.html" title="">Adapters</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="App$.html" title="The main class for the complete NetLogo application."></a>
+                        <a class="class" href="App.html" title=""></a>
+                        <a href="App.html" title="">App</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="AppControlSet.html" title=""></a>
+                        <a href="AppControlSet.html" title="">AppControlSet</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="AppFrame.html" title=""></a>
+                        <a href="AppFrame.html" title="">AppFrame</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="" title=""></a>
+                        <a href="" title="">AppTabManager</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="CodeTabContainer$.html" title=""></a>
+                        <a class="class" href="CodeTabContainer.html" title=""></a>
+                        <a href="CodeTabContainer.html" title="">CodeTabContainer</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="CodeTabsPanel.html" title=""></a>
+                        <a href="CodeTabsPanel.html" title="">CodeTabsPanel</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ConvertIncludeFile.html" title=""></a>
+                        <a href="ConvertIncludeFile.html" title="">ConvertIncludeFile</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="DirtyMonitor$.html" title=""></a>
+                        <a class="class" href="DirtyMonitor.html" title=""></a>
+                        <a href="DirtyMonitor.html" title="">DirtyMonitor</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="EditMenu$.html" title=""></a>
+                        <a class="class" href="EditMenu.html" title=""></a>
+                        <a href="EditMenu.html" title="">EditMenu</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ExtensionAssistant.html" title=""></a>
+                        <a href="ExtensionAssistant.html" title="">ExtensionAssistant</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="FileManager$.html" title=""></a>
+                        <a class="class" href="FileManager.html" title="This class manages a number of file operations."></a>
+                        <a href="FileManager.html" title="This class manages a number of file operations.">FileManager</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="FileMenu$.html" title=""></a>
+                        <a class="class" href="FileMenu.html" title=""></a>
+                        <a href="FileMenu.html" title="">FileMenu</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="object" href="HelpActions$.html" title=""></a>
+                        <a href="HelpActions$.html" title="">HelpActions</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="HelpMenu$.html" title=""></a>
+                        <a class="class" href="HelpMenu.html" title=""></a>
+                        <a href="HelpMenu.html" title="">HelpMenu</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="LocalBrowseAction.html" title=""></a>
+                        <a href="LocalBrowseAction.html" title="">LocalBrowseAction</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="MenuBar.html" title=""></a>
+                        <a href="MenuBar.html" title="">MenuBar</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ModelEntry.html" title=""></a>
+                        <a href="ModelEntry.html" title="">ModelEntry</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ModelSaver.html" title=""></a>
+                        <a href="ModelSaver.html" title="">ModelSaver</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="object" href="OfferSaveExternalsDialog$.html" title=""></a>
+                        <a href="OfferSaveExternalsDialog$.html" title="">OfferSaveExternalsDialog</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="OpenColorDialog.html" title=""></a>
+                        <a href="OpenColorDialog.html" title="">OpenColorDialog</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="OpenHubNetClientEditor.html" title=""></a>
+                        <a href="OpenHubNetClientEditor.html" title="">OpenHubNetClientEditor</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="OpenLibrariesDialog.html" title=""></a>
+                        <a href="OpenLibrariesDialog.html" title="">OpenLibrariesDialog</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="OpenRecentFileAction$.html" title=""></a>
+                        <a class="class" href="OpenRecentFileAction.html" title=""></a>
+                        <a href="OpenRecentFileAction.html" title="">OpenRecentFileAction</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="object" href="Plugins$.html" title="Loads plugins."></a>
+                        <a href="Plugins$.html" title="Loads plugins.">Plugins</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="RecentFiles.html" title=""></a>
+                        <a href="RecentFiles.html" title="">RecentFiles</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="RecentFilesMenu.html" title=""></a>
+                        <a href="RecentFilesMenu.html" title="">RecentFilesMenu</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="RemoteBrowseAction.html" title=""></a>
+                        <a href="RemoteBrowseAction.html" title="">RemoteBrowseAction</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ShowAboutWindow.html" title=""></a>
+                        <a href="ShowAboutWindow.html" title="">ShowAboutWindow</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ShowDialogAction.html" title=""></a>
+                        <a href="ShowDialogAction.html" title="">ShowDialogAction</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ShowPreferencesDialog.html" title=""></a>
+                        <a href="ShowPreferencesDialog.html" title="">ShowPreferencesDialog</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ShowShapeManager.html" title=""></a>
+                        <a href="ShowShapeManager.html" title="">ShowShapeManager</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ShowSystemDynamicsModeler.html" title=""></a>
+                        <a href="ShowSystemDynamicsModeler.html" title="">ShowSystemDynamicsModeler</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="object" href="Splash$.html" title=""></a>
+                        <a href="Splash$.html" title="">Splash</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="Tabs.html" title=""></a>
+                        <a href="Tabs.html" title="">Tabs</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="TabsMenu$.html" title=""></a>
+                        <a class="class" href="TabsMenu.html" title=""></a>
+                        <a href="TabsMenu.html" title="">TabsMenu</a>
+                      </li><li class="current-entities indented3">
+                        <a class="object" href="ToolsMenu$.html" title=""></a>
+                        <a class="class" href="ToolsMenu.html" title=""></a>
+                        <a href="ToolsMenu.html" title="">ToolsMenu</a>
+                      </li><li class="current-entities indented3">
+                        <span class="separator"></span>
+                        <a class="class" href="ZoomMenu.html" title=""></a>
+                        <a href="ZoomMenu.html" title="">ZoomMenu</a>
+                      </li>
+              </ul>
+            </div>
+          </div>
+          <div id="content">
+            <body class="class type">
+      <div id="definition">
+        <div class="big-circle class">c</div>
+        <p id="owner"><a href="../../index.html" class="extype" name="org">org</a>.<a href="../index.html" class="extype" name="org.nlogo">nlogo</a>.<a href="index.html" class="extype" name="org.nlogo.app">app</a></p>
+        <h1>AppTabManager<span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span></h1>
+        <h3><span class="morelinks"></span></h3>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <span class="name">AppTabManager</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+
+      
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/NetLogo/NetLogo/blob/6.2.2/netlogo-gui/src/main/app/AppTabManager.scala" target="_blank">AppTabManager.scala</a></dd></dl><div class="toggleContainer block">
+          <span class="toggle">
+            Linear Supertypes
+          </span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div class="toggle"></div>
+        <div id="memberfilter">
+          <i class="material-icons arrow"></i>
+          <span class="input">
+            <input id="mbrsel-input" placeholder="Filter all members" type="text" accesskey="/" />
+          </span>
+          <i class="clear material-icons"></i>
+        </div>
+        <div id="filterby">
+          <div id="order">
+            <span class="filtertype">Ordering</span>
+            <ol>
+              
+              <li class="alpha in"><span>Alphabetic</span></li>
+              <li class="inherit out"><span>By Inheritance</span></li>
+            </ol>
+          </div>
+          <div class="ancestors">
+                  <span class="filtertype">Inherited<br />
+                  </span>
+                  <ol id="linearization">
+                    <li class="in" name="org.nlogo.app.AppTabManager"><span>AppTabManager</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  </ol>
+                </div><div class="ancestors">
+              <span class="filtertype"></span>
+              <ol>
+                <li class="hideall out"><span>Hide All</span></li>
+                <li class="showall in"><span>Show All</span></li>
+              </ol>
+            </div>
+          <div id="visbl">
+              <span class="filtertype">Visibility</span>
+              <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+            </div>
+        </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="org.nlogo.app.AppTabManager#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(appTabsPanel:org.nlogo.app.Tabs,codeTabsPanelOption:Option[org.nlogo.app.CodeTabsPanel]):org.nlogo.app.AppTabManager"></a><a id="&lt;init&gt;:AppTabManager"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#&lt;init&gt;(appTabsPanel:org.nlogo.app.Tabs,codeTabsPanelOption:Option[org.nlogo.app.CodeTabsPanel]):org.nlogo.app.AppTabManager" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">AppTabManager</span><span class="params">(<span name="appTabsPanel">appTabsPanel: <a href="Tabs.html" class="extype" name="org.nlogo.app.Tabs">Tabs</a></span>, <span name="codeTabsPanelOption">codeTabsPanelOption: <span class="extype" name="scala.Option">Option</span>[<a href="CodeTabsPanel.html" class="extype" name="org.nlogo.app.CodeTabsPanel">CodeTabsPanel</a>]</span>)</span>
+      </span>
+      
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        <div class="values members">
+              <h3>Value Members</h3>
+              <ol>
+                <li name="scala.AnyRef#!=" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a><a id="!=(Any):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#!=(x$1:Any):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html###():Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a><a id="==(Any):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#==(x$1:Any):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#__PrintHideUndoMenuCounts" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__PrintHideUndoMenuCounts():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__PrintHideUndoMenuCounts():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__PrintHideUndoMenuCounts</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__PrintStateInfo" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__PrintStateInfo(previousTab:java.awt.Component,currentTab:java.awt.Component):Unit"></a><a id="__PrintStateInfo(Component,Component):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__PrintStateInfo(previousTab:java.awt.Component,currentTab:java.awt.Component):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__PrintStateInfo</span><span class="params">(<span name="previousTab">previousTab: <span class="extype" name="java.awt.Component">Component</span></span>, <span name="currentTab">currentTab: <span class="extype" name="java.awt.Component">Component</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__PrintWindowEventInfo" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__PrintWindowEventInfo(e:java.awt.event.WindowEvent):Unit"></a><a id="__PrintWindowEventInfo(WindowEvent):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__PrintWindowEventInfo(e:java.awt.event.WindowEvent):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__PrintWindowEventInfo</span><span class="params">(<span name="e">e: <span class="extype" name="java.awt.event.WindowEvent">WindowEvent</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__countMenuItembyNameAndMenuName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__countMenuItembyNameAndMenuName(menuName:String,menuItemName:String):Int"></a><a id="__countMenuItembyNameAndMenuName(String,String):Int"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__countMenuItembyNameAndMenuName(menuName:String,menuItemName:String):Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__countMenuItembyNameAndMenuName</span><span class="params">(<span name="menuName">menuName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="menuItemName">menuItemName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__getMenuItembyName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__getMenuItembyName(menu:javax.swing.JMenu,menuItemName:String):Option[javax.swing.JMenuItem]"></a><a id="__getMenuItembyName(JMenu,String):Option[JMenuItem]"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__getMenuItembyName(menu:javax.swing.JMenu,menuItemName:String):Option[javax.swing.JMenuItem]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__getMenuItembyName</span><span class="params">(<span name="menu">menu: <span class="extype" name="javax.swing.JMenu">JMenu</span></span>, <span name="menuItemName">menuItemName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="javax.swing.JMenuItem">JMenuItem</span>]</span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__getMenuItembyNameAndMenuName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__getMenuItembyNameAndMenuName(menuName:String,menuItemName:String):Option[javax.swing.JMenuItem]"></a><a id="__getMenuItembyNameAndMenuName(String,String):Option[JMenuItem]"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__getMenuItembyNameAndMenuName(menuName:String,menuItemName:String):Option[javax.swing.JMenuItem]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__getMenuItembyNameAndMenuName</span><span class="params">(<span name="menuName">menuName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="menuItemName">menuItemName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="javax.swing.JMenuItem">JMenuItem</span>]</span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__getSimpleName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__getSimpleName(c:Any):String"></a><a id="__getSimpleName(Any):String"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__getSimpleName(c:Any):String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__getSimpleName</span><span class="params">(<span name="c">c: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printAllTabs" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printAllTabs():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printAllTabs():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printAllTabs</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printAppFrameInputActionMaps" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printAppFrameInputActionMaps():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printAppFrameInputActionMaps():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printAppFrameInputActionMaps</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printAppFrameInputMap" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printAppFrameInputMap():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printAppFrameInputMap():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printAppFrameInputMap</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printAppMenuAcceleratorsByName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printAppMenuAcceleratorsByName(menuName:String):Unit"></a><a id="__printAppMenuAcceleratorsByName(String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printAppMenuAcceleratorsByName(menuName:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printAppMenuAcceleratorsByName</span><span class="params">(<span name="menuName">menuName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printAppMenuBar" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printAppMenuBar():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printAppMenuBar():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printAppMenuBar</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printAppMenuBarAccelerators" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printAppMenuBarAccelerators():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printAppMenuBarAccelerators():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printAppMenuBarAccelerators</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printAppMenuByName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printAppMenuByName(menuName:String):Unit"></a><a id="__printAppMenuByName(String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printAppMenuByName(menuName:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printAppMenuByName</span><span class="params">(<span name="menuName">menuName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printFocusOwner" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printFocusOwner(topContainer:javax.swing.JFrame,fullInfo:Boolean):Unit"></a><a id="__printFocusOwner(JFrame,Boolean):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printFocusOwner(topContainer:javax.swing.JFrame,fullInfo:Boolean):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printFocusOwner</span><span class="params">(<span name="topContainer">topContainer: <span class="extype" name="javax.swing.JFrame">JFrame</span></span>, <span name="fullInfo">fullInfo: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printFocusOwner" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printFocusOwner(topContainer:javax.swing.JFrame):Unit"></a><a id="__printFocusOwner(JFrame):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printFocusOwner(topContainer:javax.swing.JFrame):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printFocusOwner</span><span class="params">(<span name="topContainer">topContainer: <span class="extype" name="javax.swing.JFrame">JFrame</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printInputActionMaps" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printInputActionMaps(component:javax.swing.JComponent):Unit"></a><a id="__printInputActionMaps(JComponent):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printInputActionMaps(component:javax.swing.JComponent):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printInputActionMaps</span><span class="params">(<span name="component">component: <span class="extype" name="javax.swing.JComponent">JComponent</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printInputMap" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printInputMap(component:javax.swing.JComponent):Unit"></a><a id="__printInputMap(JComponent):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printInputMap(component:javax.swing.JComponent):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printInputMap</span><span class="params">(<span name="component">component: <span class="extype" name="javax.swing.JComponent">JComponent</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printMenuAccelerators" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printMenuAccelerators(menu:javax.swing.JMenu):Unit"></a><a id="__printMenuAccelerators(JMenu):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printMenuAccelerators(menu:javax.swing.JMenu):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printMenuAccelerators</span><span class="params">(<span name="menu">menu: <span class="extype" name="javax.swing.JMenu">JMenu</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printMenuItem" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printMenuItem(menuItem:javax.swing.JMenuItem,level:Int):Unit"></a><a id="__printMenuItem(JMenuItem,Int):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printMenuItem(menuItem:javax.swing.JMenuItem,level:Int):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printMenuItem</span><span class="params">(<span name="menuItem">menuItem: <span class="extype" name="javax.swing.JMenuItem">JMenuItem</span></span>, <span name="level">level: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printMenuItembyNameAndMenuName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printMenuItembyNameAndMenuName(menuName:String,menuItemName:String):Unit"></a><a id="__printMenuItembyNameAndMenuName(String,String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printMenuItembyNameAndMenuName(menuName:String,menuItemName:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printMenuItembyNameAndMenuName</span><span class="params">(<span name="menuName">menuName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="menuItemName">menuItemName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printMenuItems" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printMenuItems(menu:javax.swing.JMenu,level:Int):Unit"></a><a id="__printMenuItems(JMenu,Int):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printMenuItems(menu:javax.swing.JMenu,level:Int):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printMenuItems</span><span class="params">(<span name="menu">menu: <span class="extype" name="javax.swing.JMenu">JMenu</span></span>, <span name="level">level: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printOptionSwingObject" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printOptionSwingObject(obj:Option[java.awt.Component],description:String):Unit"></a><a id="__printOptionSwingObject(Option[Component],String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printOptionSwingObject(obj:Option[java.awt.Component],description:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printOptionSwingObject</span><span class="params">(<span name="obj">obj: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.awt.Component">Component</span>]</span>, <span name="description">description: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printSeparateCodeFrameInputActionMaps" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printSeparateCodeFrameInputActionMaps():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printSeparateCodeFrameInputActionMaps():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printSeparateCodeFrameInputActionMaps</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printSeparateCodeFrameInputMap" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printSeparateCodeFrameInputMap():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printSeparateCodeFrameInputMap():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printSeparateCodeFrameInputMap</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printSwingObject" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printSwingObject(obj:java.awt.Component,description:String):Unit"></a><a id="__printSwingObject(Component,String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printSwingObject(obj:java.awt.Component,description:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printSwingObject</span><span class="params">(<span name="obj">obj: <span class="extype" name="java.awt.Component">Component</span></span>, <span name="description">description: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printTabsMenuActions" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printTabsMenuActions():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printTabsMenuActions():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printTabsMenuActions</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#__printTabsOfTabsPanel" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="__printTabsOfTabsPanel(pane:javax.swing.JTabbedPane):Unit"></a><a id="__printTabsOfTabsPanel(JTabbedPane):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#__printTabsOfTabsPanel(pane:javax.swing.JTabbedPane):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">__printTabsOfTabsPanel</span><span class="params">(<span name="pane">pane: <span class="extype" name="javax.swing.JTabbedPane">JTabbedPane</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#addAppFrameKeyStroke" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="addAppFrameKeyStroke(mapKey:javax.swing.KeyStroke,action:javax.swing.Action,actionName:String):Unit"></a><a id="addAppFrameKeyStroke(KeyStroke,Action,String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#addAppFrameKeyStroke(mapKey:javax.swing.KeyStroke,action:javax.swing.Action,actionName:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addAppFrameKeyStroke</span><span class="params">(<span name="mapKey">mapKey: <span class="extype" name="javax.swing.KeyStroke">KeyStroke</span></span>, <span name="action">action: <span class="extype" name="javax.swing.Action">Action</span></span>, <span name="actionName">actionName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#addCodeTabContainerKeyStroke" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="addCodeTabContainerKeyStroke(mapKey:javax.swing.KeyStroke,action:javax.swing.Action,actionName:String):Unit"></a><a id="addCodeTabContainerKeyStroke(KeyStroke,Action,String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#addCodeTabContainerKeyStroke(mapKey:javax.swing.KeyStroke,action:javax.swing.Action,actionName:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addCodeTabContainerKeyStroke</span><span class="params">(<span name="mapKey">mapKey: <span class="extype" name="javax.swing.KeyStroke">KeyStroke</span></span>, <span name="action">action: <span class="extype" name="javax.swing.Action">Action</span></span>, <span name="actionName">actionName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#addComponentKeyStroke" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="addComponentKeyStroke(component:javax.swing.JComponent,mapKey:javax.swing.KeyStroke,action:javax.swing.Action,actionName:String):Unit"></a><a id="addComponentKeyStroke(JComponent,KeyStroke,Action,String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#addComponentKeyStroke(component:javax.swing.JComponent,mapKey:javax.swing.KeyStroke,action:javax.swing.Action,actionName:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addComponentKeyStroke</span><span class="params">(<span name="component">component: <span class="extype" name="javax.swing.JComponent">JComponent</span></span>, <span name="mapKey">mapKey: <span class="extype" name="javax.swing.KeyStroke">KeyStroke</span></span>, <span name="action">action: <span class="extype" name="javax.swing.Action">Action</span></span>, <span name="actionName">actionName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#addNewTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addNewTab(tab:java.awt.Component,title:String,icon:javax.swing.Icon,tip:String):Unit"></a><a id="addNewTab(Component,String,Icon,String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#addNewTab(tab:java.awt.Component,title:String,icon:javax.swing.Icon,tip:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addNewTab</span><span class="params">(<span name="tab">tab: <span class="extype" name="java.awt.Component">Component</span></span>, <span name="title">title: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">null</span></span>, <span name="icon">icon: <span class="extype" name="javax.swing.Icon">Icon</span> = <span class="symbol">null</span></span>, <span name="tip">tip: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">null</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Adds a Component to the appropriate NetLogo JTabbedPane.</p><div class="fullcomment"><div class="comment cmt"><p>Adds a Component to the appropriate NetLogo JTabbedPane.
+Also adds an entry to the Tabs Menu
+If a separate code window exists, a CodeTab will be added to its JTabbedPane,
+Otherwise the Component will be added to the Application Window JTabbedPane. AAB 10/2020.
+New Components appear to the right of previous Components of the same
+category non-CodeTabs or CodeTabs.
+</p></div><dl class="paramcmts block"><dt class="param">tab</dt><dd class="cmt"><p>the Component to add</p></dd><dt class="param">title</dt><dd class="cmt"><p>the title of the tab; may be <code>null</code></p></dd><dt class="param">icon</dt><dd class="cmt"><p>the icon for the tab; may be <code>null</code></p></dd><dt class="param">tip</dt><dd class="cmt"><p>the associated tooltip</p></dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#appContentPane" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="appContentPane:javax.swing.JComponent"></a><a id="appContentPane:JComponent"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#appContentPane:javax.swing.JComponent" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">appContentPane</span><span class="result">: <span class="extype" name="javax.swing.JComponent">JComponent</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#appTabsPanel" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="appTabsPanel:org.nlogo.app.Tabs"></a><a id="appTabsPanel:Tabs"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#appTabsPanel:org.nlogo.app.Tabs" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">appTabsPanel</span><span class="result">: <a href="Tabs.html" class="extype" name="org.nlogo.app.Tabs">Tabs</a></span>
+      </span>
+      
+      
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#asInstanceOf[T0]:T0" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a><a id="clone():AnyRef"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#clone():Object" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#codeTabsPanelOption" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="codeTabsPanelOption:Option[org.nlogo.app.CodeTabsPanel]"></a><a id="codeTabsPanelOption:Option[CodeTabsPanel]"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#codeTabsPanelOption:Option[org.nlogo.app.CodeTabsPanel]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">codeTabsPanelOption</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="CodeTabsPanel.html" class="extype" name="org.nlogo.app.CodeTabsPanel">CodeTabsPanel</a>]</span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#combinedIndexFromOwnerAndIndex" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="combinedIndexFromOwnerAndIndex(tabOwner:org.nlogo.app.AbstractTabsPanel,index:Int):Int"></a><a id="combinedIndexFromOwnerAndIndex(AbstractTabsPanel,Int):Int"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#combinedIndexFromOwnerAndIndex(tabOwner:org.nlogo.app.AbstractTabsPanel,index:Int):Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">combinedIndexFromOwnerAndIndex</span><span class="params">(<span name="tabOwner">tabOwner: <a href="AbstractTabsPanel.html" class="extype" name="org.nlogo.app.AbstractTabsPanel">AbstractTabsPanel</a></span>, <span name="index">index: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#copyMenuAccelerators" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="copyMenuAccelerators(menu:javax.swing.JMenu):Unit"></a><a id="copyMenuAccelerators(JMenu):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#copyMenuAccelerators(menu:javax.swing.JMenu):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">copyMenuAccelerators</span><span class="params">(<span name="menu">menu: <span class="extype" name="javax.swing.JMenu">JMenu</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#copyMenuAcceleratorsByName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="copyMenuAcceleratorsByName(menuName:String):Unit"></a><a id="copyMenuAcceleratorsByName(String):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#copyMenuAcceleratorsByName(menuName:String):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">copyMenuAcceleratorsByName</span><span class="params">(<span name="menuName">menuName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#copyMenuBarAccelerators" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="copyMenuBarAccelerators():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#copyMenuBarAccelerators():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">copyMenuBarAccelerators</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#createCodeTabAccelerators" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="createCodeTabAccelerators():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#createCodeTabAccelerators():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">createCodeTabAccelerators</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#dirtyMonitor" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="dirtyMonitor:org.nlogo.app.DirtyMonitor"></a><a id="dirtyMonitor:DirtyMonitor"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#dirtyMonitor:org.nlogo.app.DirtyMonitor" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">dirtyMonitor</span><span class="result">: <a href="DirtyMonitor.html" class="extype" name="org.nlogo.app.DirtyMonitor">DirtyMonitor</a></span>
+      </span>
+      
+      
+    </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#eq(x$1:AnyRef):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a><a id="equals(Any):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#equals(x$1:Any):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#finalize():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#getAppMenuBar" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getAppMenuBar:org.nlogo.app.MenuBar"></a><a id="getAppMenuBar:MenuBar"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getAppMenuBar:org.nlogo.app.MenuBar" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getAppMenuBar</span><span class="result">: <a href="MenuBar.html" class="extype" name="org.nlogo.app.MenuBar">MenuBar</a></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getAppTabsOwner" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getAppTabsOwner:org.nlogo.app.Tabs"></a><a id="getAppTabsOwner:Tabs"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getAppTabsOwner:org.nlogo.app.Tabs" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getAppTabsOwner</span><span class="result">: <a href="Tabs.html" class="extype" name="org.nlogo.app.Tabs">Tabs</a></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getAppTabsPanel" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getAppTabsPanel:org.nlogo.app.Tabs"></a><a id="getAppTabsPanel:Tabs"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getAppTabsPanel:org.nlogo.app.Tabs" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getAppTabsPanel</span><span class="result">: <a href="Tabs.html" class="extype" name="org.nlogo.app.Tabs">Tabs</a></span>
+      </span>
+      
+      
+    </li><li name="scala.AnyRef#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getClass():Class[_]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#getCodeTabsOwner" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getCodeTabsOwner():org.nlogo.app.AbstractTabsPanel"></a><a id="getCodeTabsOwner():AbstractTabsPanel"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getCodeTabsOwner():org.nlogo.app.AbstractTabsPanel" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getCodeTabsOwner</span><span class="params">()</span><span class="result">: <a href="AbstractTabsPanel.html" class="extype" name="org.nlogo.app.AbstractTabsPanel">AbstractTabsPanel</a></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getComponentAtCombinedIndex" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getComponentAtCombinedIndex(index:Int):java.awt.Component"></a><a id="getComponentAtCombinedIndex(Int):Component"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getComponentAtCombinedIndex(index:Int):java.awt.Component" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getComponentAtCombinedIndex</span><span class="params">(<span name="index">index: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="java.awt.Component">Component</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getDirtyMonitor" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getDirtyMonitor:org.nlogo.app.DirtyMonitor"></a><a id="getDirtyMonitor:DirtyMonitor"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getDirtyMonitor:org.nlogo.app.DirtyMonitor" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getDirtyMonitor</span><span class="result">: <a href="DirtyMonitor.html" class="extype" name="org.nlogo.app.DirtyMonitor">DirtyMonitor</a></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getIndexOfCodeTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getIndexOfCodeTab(tab:org.nlogo.app.codetab.CodeTab):Int"></a><a id="getIndexOfCodeTab(CodeTab):Int"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getIndexOfCodeTab(tab:org.nlogo.app.codetab.CodeTab):Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getIndexOfCodeTab</span><span class="params">(<span name="tab">tab: <a href="codetab/CodeTab.html" class="extype" name="org.nlogo.app.codetab.CodeTab">CodeTab</a></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getMainCodeTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getMainCodeTab:org.nlogo.app.codetab.MainCodeTab"></a><a id="getMainCodeTab:MainCodeTab"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getMainCodeTab:org.nlogo.app.codetab.MainCodeTab" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getMainCodeTab</span><span class="result">: <a href="codetab/MainCodeTab.html" class="extype" name="org.nlogo.app.codetab.MainCodeTab">MainCodeTab</a></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getMenuByName" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getMenuByName(menuName:String):Option[javax.swing.JMenu]"></a><a id="getMenuByName(String):Option[JMenu]"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getMenuByName(menuName:String):Option[javax.swing.JMenu]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getMenuByName</span><span class="params">(<span name="menuName">menuName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="javax.swing.JMenu">JMenu</span>]</span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getSelectedAppTabIndex" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getSelectedAppTabIndex():Int"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getSelectedAppTabIndex():Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getSelectedAppTabIndex</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getSelectedCodeTabComponent" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getSelectedCodeTabComponent():Option[java.awt.Component]"></a><a id="getSelectedCodeTabComponent():Option[Component]"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getSelectedCodeTabComponent():Option[java.awt.Component]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getSelectedCodeTabComponent</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.awt.Component">Component</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Gets selected code tab if any , whether or not separate code window exists.</p>
+    </li><li name="org.nlogo.app.AppTabManager#getSelectedNonCodeTabComponent" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getSelectedNonCodeTabComponent():Option[java.awt.Component]"></a><a id="getSelectedNonCodeTabComponent():Option[Component]"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getSelectedNonCodeTabComponent():Option[java.awt.Component]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getSelectedNonCodeTabComponent</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.awt.Component">Component</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Gets selected non-code tab if any , whether or not separate code window exists.</p>
+    </li><li name="org.nlogo.app.AppTabManager#getTabOwner" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getTabOwner(tab:java.awt.Component):org.nlogo.app.AbstractTabsPanel"></a><a id="getTabOwner(Component):AbstractTabsPanel"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getTabOwner(tab:java.awt.Component):org.nlogo.app.AbstractTabsPanel" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTabOwner</span><span class="params">(<span name="tab">tab: <span class="extype" name="java.awt.Component">Component</span></span>)</span><span class="result">: <a href="AbstractTabsPanel.html" class="extype" name="org.nlogo.app.AbstractTabsPanel">AbstractTabsPanel</a></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getTitleAtCombinedIndex" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getTitleAtCombinedIndex(index:Int):String"></a><a id="getTitleAtCombinedIndex(Int):String"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getTitleAtCombinedIndex(index:Int):String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTitleAtCombinedIndex</span><span class="params">(<span name="index">index: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#getTotalTabCount" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getTotalTabCount():Int"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#getTotalTabCount():Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTotalTabCount</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Return the number of tabs in the Application Window JTabbedPane plus
+those in the separate code window (if it exists).</p>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#hashCode():Int" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#indent" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="indent(n:Int):String"></a><a id="indent(Int):String"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#indent(n:Int):String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">indent</span><span class="params">(<span name="n">n: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#intKeyToMenuKeystroke" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="intKeyToMenuKeystroke(key:Int,withShift:Boolean,withAlt:Boolean):javax.swing.KeyStroke"></a><a id="intKeyToMenuKeystroke(Int,Boolean,Boolean):KeyStroke"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#intKeyToMenuKeystroke(key:Int,withShift:Boolean,withAlt:Boolean):javax.swing.KeyStroke" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">intKeyToMenuKeystroke</span><span class="params">(<span name="key">key: <span class="extype" name="scala.Int">Int</span></span>, <span name="withShift">withShift: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="withAlt">withAlt: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="javax.swing.KeyStroke">KeyStroke</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#isCodeTabSeparate" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="isCodeTabSeparate:Boolean"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#isCodeTabSeparate:Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isCodeTabSeparate</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#isInstanceOf[T0]:Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#menuBar" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="menuBar:org.nlogo.app.MenuBar"></a><a id="menuBar:MenuBar"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#menuBar:org.nlogo.app.MenuBar" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">menuBar</span><span class="result">: <a href="MenuBar.html" class="extype" name="org.nlogo.app.MenuBar">MenuBar</a></span>
+      </span>
+      
+      
+    </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#ne(x$1:AnyRef):Boolean" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#notify():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#notifyAll():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#ownerAndIndexFromCombinedIndex" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ownerAndIndexFromCombinedIndex(combinedTabIndex:Int):(org.nlogo.app.AbstractTabsPanel,Int)"></a><a id="ownerAndIndexFromCombinedIndex(Int):(AbstractTabsPanel,Int)"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#ownerAndIndexFromCombinedIndex(combinedTabIndex:Int):(org.nlogo.app.AbstractTabsPanel,Int)" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ownerAndIndexFromCombinedIndex</span><span class="params">(<span name="combinedTabIndex">combinedTabIndex: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: (<a href="AbstractTabsPanel.html" class="extype" name="org.nlogo.app.AbstractTabsPanel">AbstractTabsPanel</a>, <span class="extype" name="scala.Int">Int</span>)</span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#ownerAndIndexOfTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ownerAndIndexOfTab(tab:java.awt.Component):(org.nlogo.app.AbstractTabsPanel,Int)"></a><a id="ownerAndIndexOfTab(Component):(AbstractTabsPanel,Int)"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#ownerAndIndexOfTab(tab:java.awt.Component):(org.nlogo.app.AbstractTabsPanel,Int)" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ownerAndIndexOfTab</span><span class="params">(<span name="tab">tab: <span class="extype" name="java.awt.Component">Component</span></span>)</span><span class="result">: (<a href="AbstractTabsPanel.html" class="extype" name="org.nlogo.app.AbstractTabsPanel">AbstractTabsPanel</a>, <span class="extype" name="scala.Int">Int</span>)</span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#removeCodeTabContainerAccelerators" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="removeCodeTabContainerAccelerators():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#removeCodeTabContainerAccelerators():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removeCodeTabContainerAccelerators</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#removeComponentKeyStroke" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="removeComponentKeyStroke(component:javax.swing.JComponent,mapKey:javax.swing.KeyStroke):Unit"></a><a id="removeComponentKeyStroke(JComponent,KeyStroke):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#removeComponentKeyStroke(component:javax.swing.JComponent,mapKey:javax.swing.KeyStroke):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removeComponentKeyStroke</span><span class="params">(<span name="component">component: <span class="extype" name="javax.swing.JComponent">JComponent</span></span>, <span name="mapKey">mapKey: <span class="extype" name="javax.swing.KeyStroke">KeyStroke</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#removeTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="removeTab(tab:java.awt.Component):Unit"></a><a id="removeTab(Component):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#removeTab(tab:java.awt.Component):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removeTab</span><span class="params">(<span name="tab">tab: <span class="extype" name="java.awt.Component">Component</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Removes the specified Component from its parent JTabbedPane
+and remove it from the Tabs Menu
+</p><div class="fullcomment"><div class="comment cmt"><p>Removes the specified Component from its parent JTabbedPane
+and remove it from the Tabs Menu
+</p></div><dl class="paramcmts block"><dt class="param">tab</dt><dd class="cmt"><p>The Component to remove.</p></dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#replaceTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replaceTab(oldTab:java.awt.Component,newTab:java.awt.Component):Unit"></a><a id="replaceTab(Component,Component):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#replaceTab(oldTab:java.awt.Component,newTab:java.awt.Component):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replaceTab</span><span class="params">(<span name="oldTab">oldTab: <span class="extype" name="java.awt.Component">Component</span></span>, <span name="newTab">newTab: <span class="extype" name="java.awt.Component">Component</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Replaces the specified Component with another Component in its parent JTabbedPane
+If one of the Component is an instance of CodeTab, the other Component must be as well
+in order to maintain the separate groupings of non-CodeTabs and CodeTabs
+.</p><div class="fullcomment"><div class="comment cmt"><p>Replaces the specified Component with another Component in its parent JTabbedPane
+If one of the Component is an instance of CodeTab, the other Component must be as well
+in order to maintain the separate groupings of non-CodeTabs and CodeTabs
+.</p></div><dl class="paramcmts block"><dt class="param">oldTab</dt><dd class="cmt"><p>The tab to be removed</p></dd><dt class="param">newTab</dt><dd class="cmt"><p>The tab to replace it with</p></dd></dl><dl class="attributes block"> <dt>Exceptions thrown</dt><dd><span class="cmt"><p><span class="extype" name="Exception"><code>Exception</code></span> if one Tab is a CodeTab and the other is not.</p></span></dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#setAppCodeTabBindings" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setAppCodeTabBindings():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setAppCodeTabBindings():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setAppCodeTabBindings</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setAppMenuBar" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setAppMenuBar(menuBar:org.nlogo.app.MenuBar):Unit"></a><a id="setAppMenuBar(MenuBar):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setAppMenuBar(menuBar:org.nlogo.app.MenuBar):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setAppMenuBar</span><span class="params">(<span name="menuBar">menuBar: <a href="MenuBar.html" class="extype" name="org.nlogo.app.MenuBar">MenuBar</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setCodeTabsPanelOption" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setCodeTabsPanelOption(_codeTabsPanelOption:Option[org.nlogo.app.CodeTabsPanel]):Unit"></a><a id="setCodeTabsPanelOption(Option[CodeTabsPanel]):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setCodeTabsPanelOption(_codeTabsPanelOption:Option[org.nlogo.app.CodeTabsPanel]):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setCodeTabsPanelOption</span><span class="params">(<span name="_codeTabsPanelOption">_codeTabsPanelOption: <span class="extype" name="scala.Option">Option</span>[<a href="CodeTabsPanel.html" class="extype" name="org.nlogo.app.CodeTabsPanel">CodeTabsPanel</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setComponentAtCombinedIndex" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setComponentAtCombinedIndex(index:Int,tab:java.awt.Component):Unit"></a><a id="setComponentAtCombinedIndex(Int,Component):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setComponentAtCombinedIndex(index:Int,tab:java.awt.Component):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setComponentAtCombinedIndex</span><span class="params">(<span name="index">index: <span class="extype" name="scala.Int">Int</span></span>, <span name="tab">tab: <span class="extype" name="java.awt.Component">Component</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setDirtyMonitor" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setDirtyMonitor(dirtyMonitor:org.nlogo.app.DirtyMonitor):Unit"></a><a id="setDirtyMonitor(DirtyMonitor):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setDirtyMonitor(dirtyMonitor:org.nlogo.app.DirtyMonitor):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setDirtyMonitor</span><span class="params">(<span name="dirtyMonitor">dirtyMonitor: <a href="DirtyMonitor.html" class="extype" name="org.nlogo.app.DirtyMonitor">DirtyMonitor</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setDirtyMonitorCodeWindow" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setDirtyMonitorCodeWindow():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setDirtyMonitorCodeWindow():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setDirtyMonitorCodeWindow</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setPanelsSelectedComponent" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setPanelsSelectedComponent(tab:java.awt.Component):Unit"></a><a id="setPanelsSelectedComponent(Component):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setPanelsSelectedComponent(tab:java.awt.Component):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setPanelsSelectedComponent</span><span class="params">(<span name="tab">tab: <span class="extype" name="java.awt.Component">Component</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Makes a tab component selected or selectable, whether or not a separate code window exists.</p><div class="fullcomment"><div class="comment cmt"><p>Makes a tab component selected or selectable, whether or not a separate code window exists.</p><p>Usual effect: the specified component becomes the selected tab of the tabOwner.
+An important alternative case occurs when a specified App Tab component is already selected.
+This should only happen when focus is in the separate code tab window.
+Swing will not allow the selection unless the Tab is first deselected. To deselect the tab without selecting
+another tab, the selected tab index of the tabOwner must be set to -1.
+The App Tab of interest is saved as the currentTab.
+Documentation update August 2021 - AAB
+</p></div><dl class="paramcmts block"><dt class="param">tab</dt><dd class="cmt"><p>the Component to be selected</p></dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager#setPanelsSelectedIndex" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setPanelsSelectedIndex(index:Int):Unit"></a><a id="setPanelsSelectedIndex(Int):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setPanelsSelectedIndex(index:Int):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setPanelsSelectedIndex</span><span class="params">(<span name="index">index: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setSelectedAppTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setSelectedAppTab(index:Int):Unit"></a><a id="setSelectedAppTab(Int):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setSelectedAppTab(index:Int):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setSelectedAppTab</span><span class="params">(<span name="index">index: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setSelectedCodeTab" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setSelectedCodeTab(tab:org.nlogo.app.codetab.CodeTab):Unit"></a><a id="setSelectedCodeTab(CodeTab):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setSelectedCodeTab(tab:org.nlogo.app.codetab.CodeTab):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setSelectedCodeTab</span><span class="params">(<span name="tab">tab: <a href="codetab/CodeTab.html" class="extype" name="org.nlogo.app.codetab.CodeTab">CodeTab</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#setSeparateCodeTabBindings" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setSeparateCodeTabBindings():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#setSeparateCodeTabBindings():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setSeparateCodeTabBindings</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#switchToNoSeparateCodeWindow" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="switchToNoSeparateCodeWindow():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#switchToNoSeparateCodeWindow():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">switchToNoSeparateCodeWindow</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#switchToSeparateCodeWindow" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="switchToSeparateCodeWindow():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#switchToSeparateCodeWindow():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">switchToSeparateCodeWindow</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager#switchToSpecifiedCodeWindowState" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="switchToSpecifiedCodeWindowState(isSeparate:Boolean):Unit"></a><a id="switchToSpecifiedCodeWindowState(Boolean):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#switchToSpecifiedCodeWindowState(isSeparate:Boolean):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">switchToSpecifiedCodeWindowState</span><span class="params">(<span name="isSeparate">isSeparate: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#toString():String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#wait():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a><a id="wait(Long,Int):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a><a id="wait(Long):Unit"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager.html#wait(x$1:Long):Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+                <span class="name">@native</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="org.nlogo.app.AppTabManager.RejoinCodeTabsAction" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RejoinCodeTabsAction"></a><a id="RejoinCodeTabsAction:RejoinCodeTabsAction"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager$RejoinCodeTabsAction$.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="AppTabManager$RejoinCodeTabsAction$.html"><span class="name">RejoinCodeTabsAction</span></a><span class="result"> extends <span class="extype" name="javax.swing.AbstractAction">AbstractAction</span></span>
+      </span>
+      
+      
+    </li><li name="org.nlogo.app.AppTabManager.SeparateCodeTabsAction" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SeparateCodeTabsAction"></a><a id="SeparateCodeTabsAction:SeparateCodeTabsAction"></a>
+      <span class="permalink">
+      <a href="../../../org/nlogo/app/AppTabManager$SeparateCodeTabsAction$.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="AppTabManager$SeparateCodeTabsAction$.html"><span class="name">SeparateCodeTabsAction</span></a><span class="result"> extends <span class="extype" name="javax.swing.AbstractAction">AbstractAction</span></span>
+      </span>
+      
+      
+    </li>
+              </ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+    </body>
+          </div>
+        </div>
+      </div>
+    </body>
+      </html>
