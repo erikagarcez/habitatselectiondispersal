@@ -2067,53 +2067,75 @@ NetLogo 6.2.2
     <setup>setup</setup>
     <go>go</go>
     <final>r:stop</final>
-    <enumeratedValueSet variable="dsd">
-      <value value="100"/>
+    <enumeratedValueSet variable="world-size">
+      <value value="256"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="patch-sizes">
+      <value value="1.8"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="patch-resolution">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Specie">
+      <value value="&quot;DA&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="num_lands" first="0" step="1" last="99"/>
     <enumeratedValueSet variable="mortality_matrix">
       <value value="0.001"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="movement_parameters_output">
-      <value value="false"/>
+    <enumeratedValueSet variable="mortality_habitat">
+      <value value="0.002"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min_step_before_settle">
+      <value value="5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="perceptual_range">
       <value value="200"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="interval">
+    <enumeratedValueSet variable="individuals">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="dmean">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="dsd">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="origin_site">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="var_Ci">
+      <value value="0.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min_Ci">
       <value value="0.5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="initial">
       <value value="0"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="dmean">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="patch-sizes">
-      <value value="1.8"/>
+    <enumeratedValueSet variable="interval">
+      <value value="0.5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ends">
       <value value="2"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="individuals">
-      <value value="1000"/>
+    <enumeratedValueSet variable="En_mean">
+      <value value="0.2"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="world-size">
-      <value value="256"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="path_outputs">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="data_directory">
-      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/data&quot;"/>
+    <enumeratedValueSet variable="En_sd">
+      <value value="0.1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="discharge-rate">
       <value value="0.01"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="autocorrelation">
-      <value value="6"/>
+    <enumeratedValueSet variable="data_directory">
+      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/data&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="output_directory">
       <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/output&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="landscape_directory">
+      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="import_hab_quality_surface">
       <value value="false"/>
@@ -2121,51 +2143,29 @@ NetLogo 6.2.2
     <enumeratedValueSet variable="hab_quality_folder">
       <value value="&quot;hab_quality/256/&quot;"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="En_mean">
-      <value value="0.3"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="occupancy_output">
+    <enumeratedValueSet variable="hab_quality_per_frag">
       <value value="false"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="min_step_before_settle">
-      <value value="5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="origin_site">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="var_Ci">
-      <value value="0.3"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="En_sd">
-      <value value="0.1"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="N_path">
-      <value value="5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="mortality_habitat">
-      <value value="0.002"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="patch-resolution">
-      <value value="10"/>
+    <enumeratedValueSet variable="autocorrelation">
+      <value value="6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ac_simple">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="landscape_directory">
-      <value value="&quot;/home/kekuntu/Documents/phd_project/Chapter_2/Landscapes/100land_10res/landscape_100land_10res/&quot;"/>
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ac">
       <value value="0"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="Specie">
-      <value value="&quot;DA&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="hab_quality_per_frag">
+    <enumeratedValueSet variable="movement_parameters_output">
       <value value="false"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="num_lands" first="10" step="1" last="99"/>
-    <enumeratedValueSet variable="min_Ci">
-      <value value="0.6"/>
+    <enumeratedValueSet variable="occupancy_output">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path_outputs">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="N_path">
+      <value value="5"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
