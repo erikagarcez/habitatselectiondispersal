@@ -212,7 +212,8 @@ end
 to go
   ;if (ticks = 0) [if count turtles < individuals [stop
   ;    show (word "Simulation for landscape " num_lands " stoped")]] ; stop simulations that had not enough individuals because of lower habitat patches. - for simulations with turtles in half landscape.
-  if (ticks < 1) [reset-timer]
+  reset-timer
+  reset-ticks
   ;show t - use this for headless simulations
   tick
   set t (t + 1)
@@ -786,7 +787,7 @@ individuals
 individuals
 0
 2000
-1000.0
+500.0
 5
 1
 NIL
@@ -2116,7 +2117,7 @@ NetLogo 6.2.2
       <value value="200"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="individuals">
-      <value value="1000"/>
+      <value value="500"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="dmean">
       <value value="1000"/>
