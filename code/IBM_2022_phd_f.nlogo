@@ -712,7 +712,7 @@ INPUTBOX
 229
 172
 num_lands
-0.0
+98.0
 1
 0
 Number
@@ -1040,7 +1040,7 @@ SWITCH
 839
 movement_parameters_output
 movement_parameters_output
-0
+1
 1
 -1000
 
@@ -1062,7 +1062,7 @@ SWITCH
 801
 path_outputs
 path_outputs
-0
+1
 1
 -1000
 
@@ -1430,7 +1430,7 @@ SWITCH
 652
 ac_simple
 ac_simple
-1
+0
 1
 -1000
 
@@ -2630,6 +2630,105 @@ NetLogo 6.2.2
     </enumeratedValueSet>
     <enumeratedValueSet variable="path_outputs">
       <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="N_path">
+      <value value="2"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment_PQ" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <final>r:stop</final>
+    <enumeratedValueSet variable="world-size">
+      <value value="150"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="patch-sizes">
+      <value value="2.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="patch-resolution">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Specie">
+      <value value="&quot;PQ&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="num_lands" first="0" step="1" last="99"/>
+    <enumeratedValueSet variable="mortality_matrix">
+      <value value="0.002"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mortality_habitat">
+      <value value="0.001"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min_dist_before_settle">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="perceptual_range">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="individuals">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="origin_site">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="var_Ci">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min_Ci">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="interval">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ends">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="En_mean">
+      <value value="0.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="En_sd">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="discharge-rate">
+      <value value="2.0E-4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="data_directory">
+      <value value="&quot;/home/marcus/Documentos/erika/doutorado/habitatselectiondispersal-main/data&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="output_directory">
+      <value value="&quot;/home/marcus/Documentos/erika/doutorado/output&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="landscape_directory">
+      <value value="&quot;/home/marcus/Documentos/erika/doutorado/habitatselectiondispersal-main/landscape/&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="import_hab_quality_surface">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hab_quality_folder">
+      <value value="&quot;hab_quality/256/&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hab_quality_per_frag">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="autocorrelation">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ac_simple">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ac">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="movement_parameters_output">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="occupancy_output">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path_outputs">
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="N_path">
       <value value="2"/>
