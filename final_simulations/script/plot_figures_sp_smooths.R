@@ -10,8 +10,8 @@ e_C <- c(0,0.5,1,1.5,2)
 d <- data.frame(C=double(),En=double(),e_C=double())
 for (i in e_C) {
   Ci <- 1
-  C <- Ci*(En^(i))
-  di <- cbind(C,En,i)
+  C <- Ci*(En^(e_C))
+  di <- cbind(C,En,e_C)
   d <- rbind(di,d)
 }
 tiff("Plasticity_level_simulated.tiff",width = 600,height = 400,res = 100)
@@ -37,20 +37,25 @@ setwd("~/Documents/phd_project/Chapter_2/output/final_simulations")
 library(ggplot2)
 library(cowplot)
 library(dplyr)
+#devtools::install_github("hrbrmstr/hrbrthemes")
+#library(hrbrthemes)
 library(viridis)
 library(ggridges)
 #-------------------------------------------------------------------------------
 # PLOTS GENERAL DATA
 #-------------------------------------------------------------------------------
-# Settlement rate
-data_means <- data %>% 
+# Mortality rate ~ settlement rate
+
+##teste <- datanew[which(datanew$run_number == 97),]
+#data <- sort(unique(data$landscape_number)) # run 97 duplicated
+
+set_table <- data %>% 
   group_by(run_number,behaviour,hab_amount,clumpiness,initial_individuals,specie) %>% 
-  summarise(n = length(turtle),
-            meanQ = mean(Hab_quality_area),
-            meanen = mean(final_En),
-            meandt = mean(total_dist) / 1000,
-            meanld = mean(linear_dist) / 1000) %>%
-  mutate (rate = n / (initial_individuals /length(unique(data$behaviour)))) 
+  summarise(n = length(turtle)) %>%
+  mutate (rate = n / (initial_individuals /length(unique(data$behaviour))))
+set_table$specie= factor(set_table$specie, levels = c("DA","PQ","MP"))
+#length(unique(datanew$run_number))
+#set_table <- set_table[which(set_table$hab_amount > 10),]
 
 theme <- theme(panel.border = element_blank(),
                strip.text.x = element_text(size = 10, face = ("italic")),panel.spacing = unit(0, "lines"),
@@ -58,7 +63,7 @@ theme <- theme(panel.border = element_blank(),
                panel.background = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank())
 specie_names <- c('DA' = "D.aurita",'PQ' = "P. quica",'MP' = "M. paraguayana")
 
-g1 <- ggplot(data_means, aes(x=behaviour, y=rate, group=behaviour,colour=factor(behaviour))) +
+g1 <- ggplot(set_table, aes(x=behaviour, y=rate, group=behaviour,colour=factor(behaviour))) +
   geom_boxplot() +
   #geom_density_ridges() +
   geom_jitter(shape=1,size = 1,position=position_jitter(0.2),alpha=0.9) +
@@ -80,7 +85,7 @@ dataq <- data %>%
   group_by(run_number,behaviour,clumpiness,hab_amount,specie) %>% 
   summarise(meanQ = mean(Hab_quality_area))
 
-g2 <- ggplot(data_means, aes(x=behaviour, y=meanQ, group=behaviour,colour=factor(behaviour))) +
+g2 <- ggplot(dataq, aes(x=behaviour, y=meanQ, group=behaviour,colour=factor(behaviour))) +
   geom_boxplot() +
   geom_jitter(shape=1,size = 1,position=position_jitter(0.2),alpha=0.5) +
   facet_grid(~specie, labeller = as_labeller(specie_names))+
@@ -102,7 +107,7 @@ dataen <- data %>%
   group_by(run_number,behaviour,clumpiness,hab_amount,specie) %>% 
   summarise(meanen = mean(final_En))
 
-g3 <- ggplot(data_means, aes(x=behaviour, y=meanen, group=behaviour,colour=factor(behaviour))) +
+g3 <- ggplot(dataen, aes(x=behaviour, y=meanen, group=behaviour,colour=factor(behaviour))) +
   geom_boxplot() +
   geom_jitter(shape=1,size = 1,position=position_jitter(0.2),alpha=0.5) +
   facet_grid(~specie, labeller = as_labeller(specie_names))+
@@ -131,7 +136,7 @@ datadt <- data %>%
   summarise(meandt = mean(total_dist) / 1000)
 datadt$specie= factor(datadt$specie, levels = c("DA","PQ","MP"))
 
-g4 <- ggplot(data_means, aes(x=behaviour, y=meandt, group=behaviour,colour=factor(behaviour))) +
+g4 <- ggplot(datadt, aes(x=behaviour, y=meandt, group=behaviour,colour=factor(behaviour))) +
   geom_boxplot() +
   geom_jitter(shape=1,size = 1,position=position_jitter(0.2),alpha=0.5) +
   facet_grid(~specie, labeller = as_labeller(specie_names))+
@@ -153,7 +158,7 @@ datadl <- data %>%
   group_by(run_number,behaviour,clumpiness,hab_amount,specie) %>% 
   summarise(meandl = mean(linear_dist) / 1000)
 
-g5 <- ggplot(data_means, aes(x=behaviour, y=meanld, group=behaviour,colour=factor(behaviour))) +
+g5 <- ggplot(datadl, aes(x=behaviour, y=meandl, group=behaviour,colour=factor(behaviour))) +
   geom_boxplot() +
   geom_jitter(shape=1,size = 1,position=position_jitter(0.2),alpha=0.5) +
   facet_grid(~specie, labeller = as_labeller(specie_names))+
@@ -167,7 +172,8 @@ g5 <- ggplot(data_means, aes(x=behaviour, y=meanld, group=behaviour,colour=facto
         axis.line = element_line(colour = "black"),
         axis.text.y = element_text(size = 8),
         axis.title.x = element_text(size = 10),
-        plot.margin = unit(c(.5,.5,.5,.5),"lines")) +
+        plot.margin = unit(c(0,.5,0,.5),"lines"),
+        legend.spacing = unit(0, "cm")) +
   labs(x="",y = "Mean Euclidian\nDistance Moved (km)",
        colour="Plasticity Level") 
 g5
@@ -190,12 +196,18 @@ plot_grid(g4,g5,
           scale = c(1,1),
           label_size = 12,ncol = 1)
 dev.off()
+
+library("gridExtra")
+
+grid.arrange(g1,                                   # bar plot spaning two columns
+             g2, g3,                               # box plot and scatter plot
+             g4, g5,
+             ncol = 2, nrow = 3, 
+             layout_matrix = rbind(c(1,1), c(2,3), c(4,5)))
+  
 #-------------------------------------------------------------------------------
 # GLM ANOVA ANALYSIS
 #-------------------------------------------------------------------------------
-glmdata <- merge(set_table,dataq,dataen,datadt,datadl,by = c("run_number","behaviour","clumpiness","hab_amount","specie"))
-
-
 m_set <- glm(rate ~ behaviour + specie, data=set_table)
 #check residuals
 olsrr::ols_plot_resid_qq(m_set)
@@ -281,126 +293,112 @@ data_land <- data %>%
 
 data_land$meanld <- data_land$meanld / 1000
 data_land$meantd <- data_land$meantd / 1000
+data_land$specie= factor(data_land$specie, levels = c("DA","PQ","MP"))
+
+data_land<- data_land %>%
+  mutate(cat_land=cut(hab_amount, breaks=c(0,10,20,30,40,50,60,70), 
+                      labels=c("0-10","10-20","20-30","30-40","40-50","50-60","60-70"),include.lowest = TRUE))
+
 
 theme1 <- theme(panel.grid.major = element_line(colour = "gray80",size=0.2),
 panel.grid.minor = element_blank(),panel.background = element_blank(),
 panel.border = element_rect(colour = "black", fill=NA, size=0.3),
 strip.background = element_blank(),
-#axis.text.x = element_blank(), axis.ticks.x = element_blank()
-)
+axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
 lab_beh <- c("C = 0.0","C = 0.5","C = 1.0","C = 1.5","C = 2.0")
 names(lab_beh) <- c("0","0.5","1","1.5","2")
-gg <- ggplot(data_land,aes(clumpiness,colour=hab_amount)) +
-  geom_point(aes(y=srate),shape =16,size=2,alpha=0.5) +
+gg <- ggplot(data_land,aes(clumpiness,colour=cat_land)) +
+  geom_point(aes(y=srate),shape =16,size=2,alpha=0.9) +
+  geom_smooth(aes(y = srate), method = "lm") +
   facet_grid(specie~behaviour,labeller = labeller(behaviour=lab_beh,specie=specie_names)) +
-  scale_colour_viridis_c(option = "D") + 
+  scale_colour_viridis_d(option = "D", alpha = 1) +
   theme1 +
-  theme(legend.position = "bottom",
-        legend.margin=margin(t=-9),
+  theme(legend.position = "none",
         strip.text = element_text(face = "bold"),
         strip.text.y= element_text(face = "italic"),
         plot.margin = unit(c(1,1,0,1),"lines"),
         plot.title = element_text(hjust = 0.5,size = 12)) +
-  #scale_alpha(guide = 'none') +
-  labs(x="Clumpiness",y= "Settlement\nRate", title="Level of Plasticity on Habitat Selection",
-       colour="Habitat Amount")
+  scale_alpha(guide = 'none') +
+  labs(x="",y= "Settlement\nRate", title="Level of Plasticity on Habitat Selection")
 gg
-
-png(file="land_set.png",width=1500, height=1000,res = 150)
-gg
-dev.off()
-
-
-gg1 <- ggplot(data_land,aes(clumpiness,colour=hab_amount)) +
-  geom_point(aes(y=meanq),shape =16,size=2,alpha=0.5) +
+ gg1 <- ggplot(data_land,aes(clumpiness,colour=cat_land)) +
+  geom_point(aes(y=meanq),shape =1,size=2,alpha=0.1) +
+   geom_smooth(aes(y = meanq), method = "lm") +
   facet_grid(specie~behaviour,labeller = labeller(behaviour=lab_beh,specie=specie_names)) +
-  scale_colour_viridis_c(option = "D") + 
+  scale_colour_viridis_d(option = "D", alpha = 0.8) + 
   theme1 +
-  theme(legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5,size = 12),
-        strip.text.y= element_text(face = "italic"),
-        strip.text.x = element_text(face = "bold"),
-        plot.margin = unit(c(1,1,0,1),"lines")
-        ) +
-  labs(x="Clumpiness",y= "Habitat Quality\nin Settlement", title="Level of Plasticity on Habitat Selection",
-       colour="Habitat Amount")
+  theme(legend.position = "none",
+        strip.text = element_text(face = "italic"),
+        strip.text.x = element_blank(),
+        plot.margin = unit(c(0,1,0,1),"lines")) +
+  scale_alpha(guide = 'none') +
+  labs(x="",y= "Habitat Quality\nin Settlement")
 gg1
 
-png(file="land_hab.png",width=1500, height=1000,res = 150)
-gg1
-dev.off()
-
-
-gg2 <- ggplot(data_land,aes(clumpiness,colour=hab_amount)) +
-  geom_point(aes(y=meanen),shape =16,size=2,alpha=0.5) +
+gg2 <- ggplot(data_land,aes(clumpiness,colour=cat_land)) +
+  geom_point(aes(y=meanen),shape =1,size=2,alpha=0.1) +
+  geom_smooth(aes(y = meanen), method = "lm") +
   facet_grid(specie~behaviour,labeller = labeller(behaviour=lab_beh,specie=specie_names)) +
-  scale_colour_viridis_c(option = "D") + 
+  scale_colour_viridis_d(option = "D", alpha = 0.8) + 
   theme1 +
-  theme(legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5,size = 12),
-        strip.text.y= element_text(face = "italic"),
-        strip.text.x = element_text(face = "bold"),
-        plot.margin = unit(c(1,1,0,1),"lines")
-  ) +
-  labs(x="Clumpiness",y= "Energy Condition\nin Settlement", title="Level of Plasticity on Habitat Selection",
-       colour="Habitat Amount")
+  theme(legend.position = "none",
+        axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        strip.text = element_text(face = "italic"),
+        strip.text.x = element_blank(),
+        plot.margin = unit(c(0,1,0,1),"lines")) +
+  scale_alpha(guide = 'none') +
+  labs(x="",y="Energy Condition\nin Settlement")
 gg2
 
-png(file="land_ener.png",width=1500, height=1000,res = 150)
-gg2
-dev.off()
-
-gg3 <- ggplot(data_land,aes(clumpiness,colour=hab_amount)) +
-  geom_point(aes(y=meanld),shape =16,size=2,alpha=0.5) +
+gg3 <- ggplot(data_land,aes(clumpiness,colour=cat_land)) +
+  geom_point(aes(y=meanld),shape =1,size=2,alpha=0.1) +
+  geom_smooth(aes(y = meanld), method = "lm") +
   facet_grid(specie~behaviour,labeller = labeller(behaviour=lab_beh,specie=specie_names)) +
-  scale_colour_viridis_c(option = "D") + 
+  scale_colour_viridis_d(option = "D", alpha = 0.8) + 
   theme1 +
-  theme(legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5,size = 12),
-        strip.text.y= element_text(face = "italic"),
-        strip.text.x = element_text(face = "bold"),
-        plot.margin = unit(c(1,1,0,1),"lines")
-  ) +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        strip.text = element_text(face = "italic"),
+        strip.text.x = element_blank(),
+        plot.margin = unit(c(0,1,0,1),"lines")) +
+  scale_alpha(guide = 'none') +
   scale_y_continuous(labels = scales::number_format(accuracy = 0.1)) +
-  labs(x="",y= "Euclidean Distance\nMoved", title="Level of Plasticity on Habitat Selection",
-       colour="Habitat Amount") +
-  guides(colour = "none")
+  labs(x="",y="Euclidian Distance\nMoved")
 gg3
 
-gg4 <- ggplot(data_land,aes(clumpiness,colour=hab_amount)) +
-  geom_point(aes(y=meantd),shape =16,size=2,alpha=0.1) +
+gg4 <- ggplot(data_land,aes(clumpiness,colour=cat_land)) +
+  geom_point(aes(y=meantd),shape =1,size=2,alpha=0.1) +
+  geom_smooth(aes(y = meantd), method = "lm") +
   facet_grid(specie~behaviour,labeller = labeller(behaviour=lab_beh,specie=specie_names)) +
-  scale_colour_viridis_c(option = "D") + 
+  scale_colour_viridis_d(option = "D", alpha = 0.8) + 
   theme1 +
   theme(legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5,size = 12),
-        strip.text.y= element_text(face = "italic"),
+        legend.margin=margin(t=-5),
+        strip.text = element_text(face = "italic"),
         strip.text.x = element_blank(),
-        plot.margin = unit(c(1,1,0,1),"lines")
-  ) +
+        axis.ticks.x = element_line(),
+        axis.text.x = element_text(),
+        plot.margin = unit(c(0,1,1,1),"lines")) +
   scale_y_continuous(labels = scales::number_format(accuracy = 0.1)) +
-  labs(x="Clumpiness",y= "Total Distance\nMoved", title="",
-       colour="Habitat Amount")
+  scale_alpha(guide = 'none') +
+  labs(x="Clumpiness",y="Total Distance\nMoved",colour="Habitat Amount")
 gg4
-
-
-setwd("Documents/phd_project/Chapter_2/output/final_simulations/")
-library("gridExtra")
-png(file="land_dist.png",width=1500, height=1000,res = 100)
-grid.arrange(gg3,
-             gg4,
-             ncol = 1, nrow = 2)
-dev.off()
 #-------------------------------------------------------------------------------
 # EXPORT FIGURE
 #------------------------------------------------------------------------------
-png(file="landscape__pointsplots.png",width=3500, height=5000,res = 250)
-plot_grid(gg,gg1,gg2,gg3,gg4,
+png(file="landscape__pointsplots_line.png",width=3500, height=5000,res = 250)
+plot_grid(gg,gg1,gg2,
           ncol =1,
-          rel_heights = c(1.1,1,1,1,1.2))
+          rel_heights = c(1.1,1,1.4))
 dev.off()
-
+png(file="landscapedist__pointsplots_line.png",width=3500, height=5000,res = 250)
+plot_grid(gg3,gg4,
+          ncol =1,
+          rel_heights = c(1.1,1.4))
+dev.off()
 
 
 #-------------------------------------------------------------------------------
@@ -426,192 +424,16 @@ data_sum <- cbind(data_sum,set_table_sum[,c(3,4)])
 
 write.csv(x = data_sum,file = "Documents/phd_project/Chapter_2/output/final_simulations/summary_data.csv")
 
-data_land_sum <- data_land %>%
-  group_by(behaviour,specie,hab_amount,clumpiness) %>%
-  summarise(m_set = mean(srate),
-            std_set = sd(srate))
 #------------------------------------------------------------------------------
-# GAM ANALYSIS
+# GLM ANOVA ANALYSIS
 #------------------------------------------------------------------------------
 library(mgcv)
-data_land$behaviour <- factor(data_land$behaviour ) 
-
-# Settlement Rate
-mod <-gam(srate~s(clumpiness)+s(hab_amount)+behaviour+specie,data=data_land, family=gaussian, select=T) # Fits the gam 
+mod <-gam(rate~s(clumpiness)+s(hab_amount)+behaviour+specie,data=set_table, family=gaussian, select=T) # Fits the gam 
 plot(mod)
 summary(mod)
 #anova(mod)
 par(mfrow=c(2,2))  
 gam.check(mod)
 
-lab_sp <- c(DA = "D.aurita",PQ = "P. quica",MP = "M. paraguayana")
-a1 <- plot_smooths(
-  model = mod,
-  series = clumpiness,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-    legend.position = "none",strip.text = element_text(face = "italic")) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   ylim(0,1) +
-  labs(x="Clumpiness (%)", y="Settlement Rate",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a1
-a2 <- plot_smooths(
-  model = mod,
-  series = hab_amount,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "bottom",strip.text = element_blank()) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   ylim(0,1) +
-  labs(x="Habitat Amount (%)", y="Settlement Rate",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a2
 
-grid.arrange(a1, a2, nrow=2, ncol=1)
 
-# Habitat quality
-mod <-gam(meanq~s(clumpiness)+s(hab_amount)+behaviour+specie,data=data_land, family=gaussian, select=T) # Fits the gam 
-plot(mod)
-summary(mod)
-#anova(mod)
-par(mfrow=c(2,2))  
-gam.check(mod)
-
-lab_sp <- c(DA = "D.aurita",PQ = "P. quica",MP = "M. paraguayana")
-a1 <- plot_smooths(
-  model = mod,
-  series = clumpiness,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "none",strip.text = element_text(face = "italic")) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   ylim(0,1) +
-  labs(x="Clumpiness (%)", y="Habitat Quality in Settlement",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a1
-a2 <- plot_smooths(
-  model = mod,
-  series = hab_amount,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "bottom",strip.text = element_blank()) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   ylim(0,1) +
-  labs(x="Habitat Amount (%)", y="Habitat Quality in Settlement",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a2
-
-grid.arrange(a1, a2, nrow=2, ncol=1)
-
-# Energetic Condition
-mod <-gam(meanen~s(clumpiness)+s(hab_amount)+behaviour+specie,data=data_land, family=gaussian, select=T) # Fits the gam 
-plot(mod)
-summary(mod)
-#anova(mod)
-par(mfrow=c(2,2))  
-gam.check(mod)
-
-lab_sp <- c(DA = "D.aurita",PQ = "P. quica",MP = "M. paraguayana")
-a1 <- plot_smooths(
-  model = mod,
-  series = clumpiness,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "none",strip.text = element_text(face = "italic")) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   ylim(0,1) +
-  labs(x="Clumpiness (%)", y="Energetic Condition in Settlement",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a1
-a2 <- plot_smooths(
-  model = mod,
-  series = hab_amount,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "bottom",strip.text = element_blank()) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   ylim(0,1) +
-  labs(x="Habitat Amount (%)", y="Energetic Condition in Settlement",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a2
-
-grid.arrange(a1, a2, nrow=2, ncol=1)
-
-# Total Distance
-mod <-gam(meantd~s(clumpiness)+s(hab_amount)+behaviour+specie,data=data_land, family=gaussian, select=T) # Fits the gam 
-plot(mod)
-summary(mod)
-#anova(mod)
-par(mfrow=c(2,2))  
-gam.check(mod)
-
-lab_sp <- c(DA = "D.aurita",PQ = "P. quica",MP = "M. paraguayana")
-a1 <- plot_smooths(
-  model = mod,
-  series = clumpiness,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "none",strip.text = element_text(face = "italic")) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   
-  labs(x="Clumpiness (%)", y="Total Distance Moved",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a1
-a2 <- plot_smooths(
-  model = mod,
-  series = hab_amount,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "bottom",strip.text = element_blank()) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+ 
-  labs(x="Habitat Amount (%)", y="Total Distance Moved",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a2
-
-grid.arrange(a1, a2, nrow=2, ncol=1)
-
-# Euclidean Distance
-mod <-gam(meanld~s(clumpiness)+s(hab_amount)+behaviour+specie,data=data_land, family=gaussian, select=T) # Fits the gam 
-plot(mod)
-summary(mod)
-#anova(mod)
-par(mfrow=c(2,2))  
-gam.check(mod)
-
-lab_sp <- c(DA = "D.aurita",PQ = "P. quica",MP = "M. paraguayana")
-a1 <- plot_smooths(
-  model = mod,
-  series = clumpiness,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "none",strip.text = element_text(face = "italic")) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+   
-  labs(x="Clumpiness (%)", y="Euclidean Distance Moved",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a1
-a2 <- plot_smooths(
-  model = mod,
-  series = hab_amount,
-  comparison = behaviour,
-  facet_terms = specie
-) +
-  theme_gray() +  theme(strip.background = element_blank(),
-                        legend.position = "bottom",strip.text = element_blank()) +
-  facet_grid(~specie, labeller = as_labeller(lab_sp))+ 
-  labs(x="Habitat Amount (%)", y="Euclidean Distance Moved",color = "Plasticity Level",
-       fill = "Plasticity Level",linetype = "Plasticity Level") 
-a2
-
-grid.arrange(a1, a2, nrow=2, ncol=1)
