@@ -8,6 +8,9 @@ This is a repository for sharing an individual-based model (IBM) developed based
 This repository is organized as it follows.
 
 code: Here you find the main NetLogo code to run the model.
+data: empirical data values for species and landscape parameters
+final simulations: results, codes to analyze data and figures
+landscape: Here you find the landscape files used in the model.
 
 Publications
 Check out our paper: Rocha, É.G.d., Börger, L., Finkelshtein, D., Mariano, E. and Vieira, M.V. (2026), The interplay between landscape change and plasticity in habitat selection determines dispersal movements and settlement in small non-flying vertebrates. Oikos e11898. https://doi.org/10.1002/oik.11898
