@@ -13,7 +13,7 @@ final simulations: results, codes to analyze data and figures
 landscape: Here you find the landscape files used in the model.
 
 ## Publications
-Check out our paper: Rocha, É.G.d., Börger, L., Finkelshtein, D., Mariano, E. and Vieira, M.V. (2026), The interplay between landscape change and plasticity in habitat selection determines dispersal movements and settlement in small non-flying vertebrates. Oikos e11898. https://doi.org/10.1002/oik.11898
+Check out our paper: Rocha, É.G.d., Börger, L., Finkelshtein, D., Mariano, E. and Vieira, M.V. (2026), The interplay between landscape change and plasticity in habitat selection determines dispersal movements and settlement in small non-flying vertebrates. Oikos, 2026: e11898. https://doi.org/10.1002/oik.11898
 
 ## Citation
 If you are going to use and cite this model in your study or report, please cite our [paper](https://doi.org/10.1002/oik.11898) or this repository: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16543549.svg)](https://doi.org/10.5281/zenodo.16543549)
